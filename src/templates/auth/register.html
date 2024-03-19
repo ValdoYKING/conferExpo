@@ -1,0 +1,95 @@
+{% extends './base.html' %}
+
+{% block title %}Iniciar sesión{% endblock %}
+
+{% block customCSS %}
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}"> -->
+<link rel="icon" href="{{ url_for('static', filename='assets/img/favicon.ico') }}" type="image/x-icon">
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/plugins.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/authentication/form-1.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/forms/theme-checkbox-radio.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/forms/switches.css') }}" type="text/css">
+{% endblock %}
+
+{% block body %}
+<body class="form">
+    <div class="form-container">
+        <div class="form-form">
+            <div class="form-form-wrap">
+                <div class="form-container">
+                    <div class="form-content">
+                        <h1 class="">Registrarse <a href="/principalInicio"><span class="brand-name">AsistenteWeb</span></a></h1>
+                        <p class="signup-link">Ya tienes cuenta? <a href="/login">Inicia sesión</a></p>
+                        <!-- Formulario login -->
+                        <form class="text-left" action="/register" method="POST">
+                            <div class="form">
+                                {% with messages = get_flashed_messages() %}
+                                
+                                {% if messages %}
+                                <br />
+                                {% for message in messages %}
+                                <div class="alert alert-primary alert-dismissible" role="alert">
+                                    <strong>{{ message }}</strong>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                            
+                                {% endwith %}
+                                <h1 class="h3 mb-3 fw-normal">Crear cuenta</h1>
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <!-- Usuarios -->
+                                <div id="username-field" class="field-wrapper input">
+                                    <input type="text" class="form-control" id="username" name="username" placeholder="username">
+                                </div>
+                                <!-- Nombre -->
+                                <div id="nombre-field" class="field-wrapper input">
+                                    <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre">
+                                </div>
+                                <!-- Matrícula -->
+                                <div id="matricula-field" class="field-wrapper input">
+                                    <input type="text" class="form-control" id="matricula" name="matricula" placeholder="Matrícula">
+                                </div>
+                                <!-- Teléfono -->
+                                <div id="telefono-field" class="field-wrapper input">
+                                    <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Teléfono">
+                                </div>
+                                <!-- Correo electrónico -->
+                                <div id="correo_electronico-field" class="field-wrapper input">
+                                    <input type="text" class="form-control" id="correo_electronico" name="correo_electronico" placeholder="Correo electrónico">
+                                </div>
+                                <!-- Contraseña -->
+                                <div id="contrasena-field" class="field-wrapper input">
+                                    <input type="password" class="form-control" name="password" placeholder="Contraseña">
+                                </div>
+                                <!-- Motivo profesional -->
+                                <div id="motivo_prof-field" class="field-wrapper input">
+                                    <input type="text" class="form-control" id="motivo_prof" name="motivo_prof" placeholder="Motivo profesional">
+                                </div>
+                                <div class="field-wrapper">
+                                    <button type="submit" class="btn btn-primary">Registrarse</button>
+                                </div>
+                                <!-- <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button> -->
+                            </div>
+                        </form>
+                        <p class="terms-conditions">© 2024 Todos los derechos reservados</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-image">
+            <div class="l-image">
+                <img src="{{ url_for('static', filename='img/conference_prin.jpg') }}" alt="">
+            </div>
+        </div>
+    </div>
+    {% block scripts %}
+    <script src="{{ url_for('static', filename='assets/js/libs/jquery-3.1.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/authentication/form-1.js') }}"></script>
+    {% endblock %}
+</body>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends './base.html' %}
+
+{% block title %}Iniciar sesión{% endblock %}
+
+{% block customCSS %}
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}"> -->
+<link rel="icon" href="{{ url_for('static', filename='assets/img/favicon.ico') }}" type="image/x-icon">
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/plugins.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/authentication/form-1.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/forms/theme-checkbox-radio.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/forms/switches.css') }}" type="text/css">
+{% endblock %}
+
+{% block body %}
+<body class="form">
+    <div class="form-container">
+        <div class="form-form">
+            <div class="form-form-wrap">
+                <div class="form-container">
+                    <div class="form-content">
+                        <h1 class="">Ingresar a <a href="/principalInicio"><span class="brand-name">AsistenteWeb</span></a></h1>
+                        <p class="signup-link">Eres nuevo? <a href="/register">Crea tu cuenta</a></p>
+                        <!-- Formulario login -->
+                        <form class="text-left" action="/login" method="POST">
+                            <div class="form">
+                                {% with messages = get_flashed_messages() %}
+                                
+                                {% if messages %}
+                                <br />
+                                {% for message in messages %}
+                                <div class="alert alert-primary alert-dismissible" role="alert">
+                                    <strong>{{ message }}</strong>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                            
+                                {% endwith %}
+                                <h1 class="h3 mb-3 fw-normal">Ingrese sus datos por favor</h1>
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <!-- Usuario -->
+                                <div id="username-field" class="field-wrapper input">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                    <input type="text" class="form-control" id="username" name="username" placeholder="Username">
+                                </div>
+                                <!-- Contraseña -->
+                                <div id="password-field" class="field-wrapper input mb-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                    <input type="password" class="form-control" name="password" placeholder="Password">
+                                </div>
+                                <div class="field-wrapper">
+                                    <button type="submit" class="btn btn-primary" value="">Ingresar</button>
+                                </div>
+                                <!-- <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button> -->
+                            </div>
+                        </form>
+                        <p class="terms-conditions">© 2024 Todos los derechos reservados</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-image">
+            <div class="l-image">
+                <img src="{{ url_for('static', filename='img/conference_prin.jpg') }}" alt="">
+            </div>
+        </div>
+    </div>
+    {% block scripts %}
+    <script src="{{ url_for('static', filename='assets/js/libs/jquery-3.1.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/authentication/form-1.js') }}"></script>
+    {% endblock %}
+</body>
+{% endblock %}
