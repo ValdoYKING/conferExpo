@@ -1,10 +1,8 @@
 {% extends './base.html' %}
 
-{% block title %}Iniciar sesión{% endblock %}
+{% block title %}ConferExpo -Registrate{% endblock %}
 
 {% block customCSS %}
-<!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}"> -->
-<link rel="icon" href="{{ url_for('static', filename='assets/img/favicon.ico') }}" type="image/x-icon">
 <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" type="text/css">
 <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,600,700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/plugins.css') }}" type="text/css">
@@ -20,10 +18,9 @@
             <div class="form-form-wrap">
                 <div class="form-container">
                     <div class="form-content">
-                        <h1 class="">Registrarse <a href="/principalInicio"><span class="brand-name">AsistenteWeb</span></a></h1>
+                        <h1 class="">Registrarse <a href="/principalInicio"><span class="brand-name">ConferExpo</span></a></h1>
                         <p class="signup-link">Ya tienes cuenta? <a href="/login">Inicia sesión</a></p>
-                        <!-- Formulario login -->
-                        <form class="text-left" action="/register" method="POST">
+                        <form id="register-user-form" class="text-left" action="/register" method="POST">
                             <div class="form">
                                 {% with messages = get_flashed_messages() %}
                                 
@@ -40,38 +37,45 @@
                                 {% endwith %}
                                 <h1 class="h3 mb-3 fw-normal">Crear cuenta</h1>
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <!-- Usuarios -->
                                 <div id="username-field" class="field-wrapper input">
-                                    <input type="text" class="form-control" id="username" name="username" placeholder="username">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-smile"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                                    <input type="text" class="form-control" id="username" name="username" placeholder="Nombre de usuario *" required>
                                 </div>
-                                <!-- Nombre -->
                                 <div id="nombre-field" class="field-wrapper input">
-                                    <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre Completo *" pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+"  title="Ingrese solo letras y letras con acentos" required>
                                 </div>
-                                <!-- Matrícula -->
                                 <div id="matricula-field" class="field-wrapper input">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user-minus"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="23" y1="11" x2="17" y2="11"></line></svg>
                                     <input type="text" class="form-control" id="matricula" name="matricula" placeholder="Matrícula">
                                 </div>
-                                <!-- Teléfono -->
                                 <div id="telefono-field" class="field-wrapper input">
-                                    <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Teléfono">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-phone"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                    <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="Teléfono *" pattern="[0-9]{1,12}" title="Ingrese solo números (máximo 12 caracteres)" required>
                                 </div>
-                                <!-- Correo electrónico -->
-                                <div id="correo_electronico-field" class="field-wrapper input">
-                                    <input type="text" class="form-control" id="correo_electronico" name="correo_electronico" placeholder="Correo electrónico">
-                                </div>
-                                <!-- Contraseña -->
-                                <div id="contrasena-field" class="field-wrapper input">
-                                    <input type="password" class="form-control" name="password" placeholder="Contraseña">
-                                </div>
-                                <!-- Motivo profesional -->
                                 <div id="motivo_prof-field" class="field-wrapper input">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                                     <input type="text" class="form-control" id="motivo_prof" name="motivo_prof" placeholder="Motivo profesional">
                                 </div>
-                                <div class="field-wrapper">
-                                    <button type="submit" class="btn btn-primary">Registrarse</button>
+                                <div id="correo_electronico-field" class="field-wrapper input">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    <input type="email" class="form-control" id="correo_electronico" name="correo_electronico" placeholder="Correo electrónico *" required>
                                 </div>
-                                <!-- <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button> -->
+                                <div id="contrasena-field" class="field-wrapper input">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-key"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña *" required>
+                                </div>
+                                <div id="repeat-password-field" class="field-wrapper input">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                    <input type="password" class="form-control" id="repeat_password" name="repeat_password" placeholder="Repite tu contraseña *" required>
+                                </div>
+                                <div id="password-error-message" class="text-danger d-none">Las contraseñas no coinciden</div>
+                                <div id="password-length-error" class="text-danger d-none">La contraseña debe tener al menos 8 caracteres y al menos un número</div>
+
+                                <div class="field-wrapper">
+                                    <!-- <button type="submit" class="btn btn-primary">Registrarse</button> -->
+                                    <button type="button" class="btn btn-primary" onclick="validateAndSubmit()">Registrarse</button>
+                                </div>
                             </div>
                         </form>
                         <p class="terms-conditions">© 2024 Todos los derechos reservados</p>
@@ -86,9 +90,52 @@
         </div>
     </div>
     {% block scripts %}
-    <script src="{{ url_for('static', filename='assets/js/libs/jquery-3.1.1.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='bootstrap/js/popper.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var nombreInput = document.getElementById("nombre");
+            var telefonoInput = document.getElementById("telefono");
+    
+            nombreInput.addEventListener("input", function() {
+                var nombreValue = nombreInput.value;
+                var nombreRegex = /^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$/;
+                if (!nombreRegex.test(nombreValue)) {
+                    nombreInput.setCustomValidity("Ingrese solo letras y letras con acentos en el nombre");
+                } else {
+                    nombreInput.setCustomValidity("");
+                }
+            });
+    
+            telefonoInput.addEventListener("input", function() {
+                var telefonoValue = telefonoInput.value;
+                var telefonoRegex = /^[0-9]{1,12}$/;
+                if (!telefonoRegex.test(telefonoValue)) {
+                    telefonoInput.setCustomValidity("Ingrese solo números (máximo 12 caracteres) en el teléfono");
+                } else {
+                    telefonoInput.setCustomValidity("");
+                }
+            });
+        });
+
+        function validateAndSubmit() {
+            var password = document.getElementById("password").value;
+            var repeatPassword = document.getElementById("repeat_password").value;
+            var passwordLengthError = document.getElementById("password-length-error");
+            var passwordErrorMessage = document.getElementById("password-error-message");
+
+            var passwordRegex = /^(?=.*\d).{8,}$/;
+            if (!passwordRegex.test(password)) {
+                passwordLengthError.classList.remove("d-none");
+                return;
+            }
+    
+            if (password !== repeatPassword) {
+                passwordErrorMessage.classList.remove("d-none");
+                return;
+            }
+
+            document.getElementById("register-user-form").submit();
+        }
+    </script>
     <script src="{{ url_for('static', filename='assets/js/authentication/form-1.js') }}"></script>
     {% endblock %}
 </body>

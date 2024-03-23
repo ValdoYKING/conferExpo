@@ -50,7 +50,7 @@ def register():
             return redirect(url_for('register'))
 
         # Crear un nuevo usuario
-        new_user = User(username=username, password=password, nombre=nombre, matricula=matricula, telefono=telefono, correo_electronico=correo_electronico, motivo_prof=motivo_prof)
+        new_user = User(username=username, password=password, nombre=nombre, matricula=matricula, telefono=telefono, correo_electronico=correo_electronico, motivo_prof=motivo_prof, rol='usuario')
         # Otros campos...
 
         # Guardar el nuevo usuario en la base de datos
@@ -62,7 +62,6 @@ def register():
         return render_template('auth/register.html')
 
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -70,12 +69,31 @@ def login():
         logged_user = ModelUser.login(db, user)
         if logged_user:
             login_user(logged_user)
-            return redirect(url_for('home'))
+            if logged_user.rol == 'administrador': 
+                return redirect(url_for('homeAdmin'))
+            elif logged_user.rol == 'usuario':
+                return redirect(url_for('homeUser'))
+            else:
+                flash("Usuario o contraseña no válidos")
+                return render_template('auth/login.html')
         else:
-            flash("Usuario o contraseña no valido")
+            flash("Usuario o contraseña no válidos")
             return render_template('auth/login.html')
     else:
         return render_template('auth/login.html')
+
+    
+
+@app.route('/homeAdmin')
+@login_required
+def homeAdmin():
+    return render_template('adminUser/homeAdmin.html')
+
+@app.route('/homeUser')
+@login_required
+def homeUser():
+    return render_template('userConferExpo/homeUser.html')
+
 
 
 @app.route('/logout')
@@ -95,13 +113,23 @@ def home():
 def protected():
     return "<h1>This is a protected view, only for authenticated users.</h1>"
 
+@app.route('/test')
+def test():
+    return render_template('error/404.html')
+
 
 def status_401(error):
     return redirect(url_for('login'))
 
 
 def status_404(error):
-    return "<h1>Page not found</h1>", 404
+    return render_template('error/404.html'),404
+
+def status_500(error):
+    return render_template('error/500.html'),500
+
+def status_503(error):
+    return render_template('error/503.html'),503
 
 
 if __name__ == '__main__':

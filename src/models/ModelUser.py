@@ -21,7 +21,8 @@ class ModelUser():
                         result.get('telefono', ''),  # Manejo de nuevo atributo
                         result.get('correo_electronico', ''),  # Manejo de nuevo atributo
                         result.get('eventos_asistidos', []),  # Manejo de nuevo atributo
-                        result.get('motivo_prof', '')  # Manejo de nuevo atributo
+                        result.get('motivo_prof', ''),  # Manejo de nuevo atributo
+                        result.get('rol', 'usuario')  # Manejo del nuevo atributo de rol
                     )
             return None
         except Exception as ex:
@@ -45,7 +46,8 @@ class ModelUser():
                     result.get('telefono', ''),  # Manejo de nuevo atributo
                     result.get('correo_electronico', ''),  # Manejo de nuevo atributo
                     result.get('eventos_asistidos', []),  # Manejo de nuevo atributo
-                    result.get('motivo_prof', '')  # Manejo de nuevo atributo
+                    result.get('motivo_prof', ''),  # Manejo de nuevo atributo
+                    result.get('rol', 'usuario')  # Manejo del nuevo atributo de rol
                 )
             return None
         except Exception as ex:
