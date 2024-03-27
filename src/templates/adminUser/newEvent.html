@@ -38,6 +38,21 @@
                             <div class="widget widget-content-area ">
                                 <div class="widget-one form-group">
                                     <form class="form-event" action="/registerEvent" method="POST" enctype="multipart/form-data">
+                                        {% with messages = get_flashed_messages() %}
+                                
+                                        {% if messages %}
+                                        <br />
+                                        {% for message in messages %}
+                                        <div class="alert alert-primary alert-dismissible" role="alert">
+                                            <strong>{{ message }}</strong>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                        {% endfor %}
+                                        {% endif %}
+                                    
+                                        {% endwith %}
+                                        <h1 class="h3 mb-3 fw-normal">Ingrese sus datos por favor</h1>
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                         <!-- Imagen del evento -->
                                         <div class="custom-file-container" data-upload-id="myFirstImage">
                                             <label><lord-icon
@@ -47,7 +62,7 @@
                                                 style="width:24px;height:24px">
                                             </lord-icon> Imagen del evento <a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image">x</a></label>
                                             <label class="custom-file-container__custom-file" >
-                                                <input type="file" class="custom-file-container__custom-file__custom-file-input" accept="image/*" name="imageEvent">
+                                                <input type="file" class="custom-file-container__custom-file__custom-file-input" accept="image/*" name="imagen">
                                                 <input type="hidden" name="MAX_FILE_SIZE" value="10485760" />
                                                 <span class="custom-file-container__custom-file__custom-file-control"></span>
                                             </label>
@@ -113,6 +128,8 @@
                                             </div>
                                             <!-- Agregar cuadro de direcciones de maps -->
                                             <div>
+                                                <input type="hidden" name="aforo" value="66" />
+                                                <input type="hidden" name="duracion_estimada" value="3" />
                                             </div>
                                             <!-- Direccion del evento -->
                                             <div>

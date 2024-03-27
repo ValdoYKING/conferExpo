@@ -1,16 +1,20 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager, login_user, logout_user, login_required
+import os
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+from werkzeug.utils import secure_filename
 
 from config import config
 
 # Models:
 from models.ModelUser import ModelUser
+from models.ModelEvento import ModelEvento
 
 # Entities:
 from models.entities.User import User
+from models.entities.Evento import Evento
 
 app = Flask(__name__)
 
@@ -25,7 +29,6 @@ db = client.asistenciaWeb_2024
 @login_manager_app.user_loader
 def load_user(id):
     return ModelUser.get_by_id(db, id)
-
 
 @app.route('/')
 def index():
@@ -111,29 +114,75 @@ def homeAdmin():
 def newEvent():
     return render_template('adminUser/newEvent.html')
 
+def allowed_file(filename):
+    allowed_extensions = app.config['ALLOWED_EXTENSIONS']
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
+
 @app.route('/registerEvent', methods=['GET', 'POST'])
 @login_required
 def registerEvent():
     if request.method == 'POST':
         # Obtener los datos del formulario de registro
-        nombre_evento = request.form['nombre_evento']
-        fecha_evento = request.form['fecha_evento']
-        hora_evento = request.form['hora_evento']
-        lugar_evento = request.form['lugar_evento']
-        descripcion_evento = request.form['descripcion_evento']
-        # Otros campos...
+        nombre = request.form['eventName']
+        resumen = request.form['resumeEvent']
+        fecha = request.form['dateEvent']
+        fecha_hora_inicio = request.form['starHour']
+        fecha_hora_fin = request.form['finishHour']
+        lugar = request.form['addressEvent']
+        referencias = request.form['referencesAddress']
+        aforo = request.form['aforo']
+        duracion_estimada = request.form['duracion_estimada']
+        descripcion = request.form['descriptionEvent']
+        
+        # Verificar si se ha proporcionado una imagen
+        if 'imagen' not in request.files:
+            flash('No se ha proporcionado ninguna imagen')
+            return redirect(request.url)
+        
+        imagen = request.files['imagen']
 
+        
+        # Verificar si la imagen tiene un nombre de archivo válido
+        if imagen.filename == '':
+            flash('No se ha seleccionado ningún archivo')
+            return redirect(request.url)
+        
+        if imagen and allowed_file(imagen.filename):
+            # Se asegura que el nombre del archivo sea seguro
+            filename = secure_filename(imagen.filename)
+            # Se guarda la imagen en la carpeta deseada
+            imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        else:
+            flash('El formato de archivo de imagen no es válido')
+            return redirect(request.url)
+        
         # Crear un nuevo evento
-        new_event = Event(nombre_evento=nombre_evento, fecha_evento=fecha_evento, hora_evento=hora_evento, lugar_evento=lugar_evento, descripcion_evento=descripcion_evento)
-        # Otros campos...
+        new_event = Evento(
+            nombre=nombre,
+            resumen=resumen,
+            fecha = fecha,
+            fecha_hora_inicio=fecha_hora_inicio,
+            fecha_hora_fin=fecha_hora_fin,
+            lugar=lugar,
+            referencias=referencias,
+            aforo=aforo,
+            duracion_estimada=duracion_estimada,
+            descripcion=descripcion,
+            imagen=os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        )
 
         # Guardar el nuevo evento en la base de datos
-        ModelEvent.register(db, new_event)
+        success, message = ModelEvento.crear_evento(db, new_event)
 
-        flash('¡Registro exitoso! Por favor, inicia sesión.')
-        return redirect(url_for('homeAdmin'))
+        if success:
+            flash(message)
+            return redirect(url_for('homeAdmin'))
+        else:
+            flash(message, 'error')
+            return redirect(url_for('registerEvent'))
     else:
-        return render_template('adminUser/registerEvent.html')
+        return render_template('adminUser/newEvent.html')
 
 @app.route('/protected')
 @login_required
