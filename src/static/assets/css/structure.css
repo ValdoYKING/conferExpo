@@ -78,17 +78,18 @@ code {
   margin-top: 56px; }
 
 #content {
-  width: 50%;
+  width: 90%;
   flex-grow: 8;
   margin-top: 80px;
   margin-bottom: 0;
-  margin-left: 255px;
+  margin-left: auto;
+  margin-right: auto;
   -webkit-transition: .3s ease all;
   transition: .3s ease all; }
 
 .main-container-fluid > .main-content > .container {
-  float: left;
-  width: 100%; }
+  float: none;
+  width: auto; }
 
 #content > .wrapper {
   -webkit-transition: margin ease-in-out .1s;
@@ -179,7 +180,7 @@ code {
 .navbar {
   padding: 0;
   min-height: 80px;
-  background: #445ede;
+  background: #6610f2;
   -webkit-transition: .3s ease all;
   transition: .3s ease all;
   -webkit-box-shadow: 0 4px 6px 0 rgba(85, 85, 85, 0.08), 0 1px 20px 0 rgba(0, 0, 0, 0.07), 0px 1px 11px 0px rgba(0, 0, 0, 0.07);

@@ -82,13 +82,6 @@ def login():
     else:
         return render_template('auth/login.html')
 
-    
-
-@app.route('/homeAdmin')
-@login_required
-def homeAdmin():
-    return render_template('adminUser/homeAdmin.html')
-
 @app.route('/homeUser')
 @login_required
 def homeUser():
@@ -107,6 +100,40 @@ def logout():
 def home():
     return render_template('home.html')
 
+# Rutas para administrador 
+@app.route('/homeAdmin')
+@login_required
+def homeAdmin():
+    return render_template('adminUser/homeAdmin.html')
+
+@app.route('/newEvent')
+@login_required
+def newEvent():
+    return render_template('adminUser/newEvent.html')
+
+@app.route('/registerEvent', methods=['GET', 'POST'])
+@login_required
+def registerEvent():
+    if request.method == 'POST':
+        # Obtener los datos del formulario de registro
+        nombre_evento = request.form['nombre_evento']
+        fecha_evento = request.form['fecha_evento']
+        hora_evento = request.form['hora_evento']
+        lugar_evento = request.form['lugar_evento']
+        descripcion_evento = request.form['descripcion_evento']
+        # Otros campos...
+
+        # Crear un nuevo evento
+        new_event = Event(nombre_evento=nombre_evento, fecha_evento=fecha_evento, hora_evento=hora_evento, lugar_evento=lugar_evento, descripcion_evento=descripcion_evento)
+        # Otros campos...
+
+        # Guardar el nuevo evento en la base de datos
+        ModelEvent.register(db, new_event)
+
+        flash('¡Registro exitoso! Por favor, inicia sesión.')
+        return redirect(url_for('homeAdmin'))
+    else:
+        return render_template('adminUser/registerEvent.html')
 
 @app.route('/protected')
 @login_required

@@ -1,16 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1, shrink-to-fit=no">
     <title>{% block title %}{% endblock %}</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/radio.svg') }}">
     <!-- Bootstrap -->
-
     <!-- Estilos Template -->
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/plugins.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styleNav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/principal.css') }}">
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
     <!-- Custom CSS -->
     {% block customCSS %}
     {% endblock %}
@@ -21,12 +24,14 @@
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
-integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
-crossorigin="anonymous"></script>
+
 <script src="{{ url_for('static', filename='assets/js/libs/jquery-3.1.1.min.js') }}"></script>
+<!-- <scr ipt s rc="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></scr> -->
 <script src="{{ url_for('static', filename='bootstrap/js/popper.min.js') }}"></script>
 <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
-{% block scripts %}
-{% endblock %}
+
+
+        {% block scripts %}
+        {% endblock %}
+</body>
 </html>

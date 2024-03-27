@@ -5,9 +5,9 @@
 {% block customCSS %}
 <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}"> -->
 <!-- <link rel="icon" href="{{ url_for('static', filename='assets/img/radioExpo.ico') }}" type="image/x-icon"> -->
-<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" type="text/css">
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" type="text/css"> -->
 <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,600,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/plugins.css') }}" type="text/css">
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/plugins.css') }}" type="text/css"> -->
 <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/authentication/form-1.css') }}" type="text/css">
 <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/forms/theme-checkbox-radio.css') }}" type="text/css">
 <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/forms/switches.css') }}" type="text/css">
@@ -67,8 +67,8 @@
             </div>
         </div>
     </div>
-    {% block scripts %}
-    <script src="{{ url_for('static', filename='assets/js/authentication/form-1.js') }}"></script>
-    {% endblock %}
-</body>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='assets/js/authentication/form-1.js') }}"></script>
 {% endblock %}

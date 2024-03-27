@@ -3,9 +3,7 @@
 {% block title %}ConferExpo -Registrate{% endblock %}
 
 {% block customCSS %}
-<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" type="text/css">
 <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,600,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/plugins.css') }}" type="text/css">
 <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/authentication/form-1.css') }}" type="text/css">
 <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/forms/theme-checkbox-radio.css') }}" type="text/css">
 <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/forms/switches.css') }}" type="text/css">
@@ -89,54 +87,53 @@
             </div>
         </div>
     </div>
-    {% block scripts %}
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var nombreInput = document.getElementById("nombre");
-            var telefonoInput = document.getElementById("telefono");
-    
-            nombreInput.addEventListener("input", function() {
-                var nombreValue = nombreInput.value;
-                var nombreRegex = /^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$/;
-                if (!nombreRegex.test(nombreValue)) {
-                    nombreInput.setCustomValidity("Ingrese solo letras y letras con acentos en el nombre");
-                } else {
-                    nombreInput.setCustomValidity("");
-                }
-            });
-    
-            telefonoInput.addEventListener("input", function() {
-                var telefonoValue = telefonoInput.value;
-                var telefonoRegex = /^[0-9]{1,12}$/;
-                if (!telefonoRegex.test(telefonoValue)) {
-                    telefonoInput.setCustomValidity("Ingrese solo números (máximo 12 caracteres) en el teléfono");
-                } else {
-                    telefonoInput.setCustomValidity("");
-                }
-            });
+{% endblock %}
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var nombreInput = document.getElementById("nombre");
+        var telefonoInput = document.getElementById("telefono");
+
+        nombreInput.addEventListener("input", function() {
+            var nombreValue = nombreInput.value;
+            var nombreRegex = /^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$/;
+            if (!nombreRegex.test(nombreValue)) {
+                nombreInput.setCustomValidity("Ingrese solo letras y letras con acentos en el nombre");
+            } else {
+                nombreInput.setCustomValidity("");
+            }
         });
 
-        function validateAndSubmit() {
-            var password = document.getElementById("password").value;
-            var repeatPassword = document.getElementById("repeat_password").value;
-            var passwordLengthError = document.getElementById("password-length-error");
-            var passwordErrorMessage = document.getElementById("password-error-message");
-
-            var passwordRegex = /^(?=.*\d).{8,}$/;
-            if (!passwordRegex.test(password)) {
-                passwordLengthError.classList.remove("d-none");
-                return;
+        telefonoInput.addEventListener("input", function() {
+            var telefonoValue = telefonoInput.value;
+            var telefonoRegex = /^[0-9]{1,12}$/;
+            if (!telefonoRegex.test(telefonoValue)) {
+                telefonoInput.setCustomValidity("Ingrese solo números (máximo 12 caracteres) en el teléfono");
+            } else {
+                telefonoInput.setCustomValidity("");
             }
-    
-            if (password !== repeatPassword) {
-                passwordErrorMessage.classList.remove("d-none");
-                return;
-            }
+        });
+    });
 
-            document.getElementById("register-user-form").submit();
+    function validateAndSubmit() {
+        var password = document.getElementById("password").value;
+        var repeatPassword = document.getElementById("repeat_password").value;
+        var passwordLengthError = document.getElementById("password-length-error");
+        var passwordErrorMessage = document.getElementById("password-error-message");
+
+        var passwordRegex = /^(?=.*\d).{8,}$/;
+        if (!passwordRegex.test(password)) {
+            passwordLengthError.classList.remove("d-none");
+            return;
         }
-    </script>
-    <script src="{{ url_for('static', filename='assets/js/authentication/form-1.js') }}"></script>
-    {% endblock %}
-</body>
+
+        if (password !== repeatPassword) {
+            passwordErrorMessage.classList.remove("d-none");
+            return;
+        }
+
+        document.getElementById("register-user-form").submit();
+    }
+</script>
+<script src="{{ url_for('static', filename='assets/js/authentication/form-1.js') }}"></script>
 {% endblock %}

@@ -1,0 +1,194 @@
+{% extends './base.html' %}
+{% block title %}ConferExpo - Eventos{% endblock %}
+
+{% block customCSS %}
+<link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/scrollspyNav.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/components/tabs-accordian/custom-tabs.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/animate/animate.css') }}" type="text/css">
+<script src="{{ url_for('static', filename='plugins/sweetalerts/promise-polyfill.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/sweetalerts/sweetalert2.min.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/sweetalerts/sweetalert.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/components/custom-sweetalert.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/file-upload/file-upload-with-preview.min.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/components/tabs-accordian/custom-accordions.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/flatpickr/flatpickr.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/flatpickr/custom-flatpickr.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/noUiSlider/custom-nouiSlider.cs') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/bootstrap-range-Slider/bootstrap-slider.css') }}" type="text/css">
+{% endblock %}
+
+{% block body %}
+<body class="sidebar-noneoverflow" data-spy="scroll" data-target="#navSection" data-offset="100">
+    <!-- Barra de navegacion -->
+    {% include 'navBarUser/navAdmin.html' %}
+    <main>
+        <div id="content" class="content">
+            <div class="layout-px-spacing">
+                <div class="container">
+                    <div class="container">
+                            <div id="wizards_pills" class="col-lg-12">
+                                <div class="seperator-header">
+                                    <h4 class="">Nuevo</h4>
+                                </div>
+                            </div>                      
+                            <div class="seperator-header">
+                                <h3>Registrar nuevo evento</h3>
+                            </div>
+                            <div class="widget widget-content-area ">
+                                <div class="widget-one form-group">
+                                    <form class="form-event" action="/registerEvent" method="POST" enctype="multipart/form-data">
+                                        <!-- Imagen del evento -->
+                                        <div class="custom-file-container" data-upload-id="myFirstImage">
+                                            <label><lord-icon
+                                                src="https://cdn.lordicon.com/smwmetfi.json"
+                                                trigger="hover"
+                                                colors="primary:#6f42c1"
+                                                style="width:24px;height:24px">
+                                            </lord-icon> Imagen del evento <a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image">x</a></label>
+                                            <label class="custom-file-container__custom-file" >
+                                                <input type="file" class="custom-file-container__custom-file__custom-file-input" accept="image/*" name="imageEvent">
+                                                <input type="hidden" name="MAX_FILE_SIZE" value="10485760" />
+                                                <span class="custom-file-container__custom-file__custom-file-control"></span>
+                                            </label>
+                                            <div class="custom-file-container__image-preview"></div>
+                                        </div>
+                                        <!-- Datos del evento -->
+                                        <div>
+                                            <h5><lord-icon
+                                                src="https://cdn.lordicon.com/lyrrgrsl.json"
+                                                trigger="hover"
+                                                style="width:24px;height:24px">
+                                            </lord-icon>Datos del evento</h5>
+                                            <!-- Noimbre del evento -->
+                                            <div>
+                                                <label for="eventName" class="label-grande">Nombre del evento</label>
+                                                <div class="input-group mb-4">
+                                                    <input type="text" class="form-control" placeholder="Nombre del evento" name="eventName" id="eventName" aria-label="eventName">
+                                                </div>
+                                            </div>
+
+                                            <!-- Resumen del evento -->
+                                            <div>
+                                                <label for="resumeEvent">Un breve resumen</label>
+                                                <div class="input-group mb-4">
+                                                    <input type="text" class="form-control" placeholder="Otorga una breve descripcion acerca del evento" name="resumeEvent" id="resumeEvent" aria-label="resumeEvent">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Lugar y fecha -->
+                                        <div>
+                                            <h5><lord-icon
+                                                src="https://cdn.lordicon.com/abfverha.json"
+                                                trigger="hover"
+                                                style="width:24px;height:24px">
+                                            </lord-icon>Lugar y fecha</h5>
+                                            <!-- Fecha -->
+                                            <div>
+                                                <label for="dateEvent" class="label-grande">Fecha</label>
+                                                <div class="form-group mb-4">
+                                                    <input id="basicFlatpickr"  name="dateEvent" value="2024-04-04" class="form-control flatpickr flatpickr-input active" type="text" placeholder="Selecciona la fecha">
+                                                </div>
+                                            </div>
+                                            <!-- hora de inicio -->
+                                            <div>
+                                                <label for="horaInicio">Hora de inicio</label>
+                                                <div class="form-group mb-4">
+                                                    <input id="horaInicio" name="starHour" class="form-control flatpickr flatpickr-input active" type="text" placeholder="Selecciona la hora de inicio">
+                                                </div>
+                                            </div>
+                                            <!-- Hora de fin -->
+                                            <div>
+                                                <label for="horaFin">Hora de fin</label>
+                                                <div class="form-group mb-4">
+                                                    <input id="horaFin" class="form-control flatpickr flatpickr-input active" name="finishHour" type="text" placeholder="Selecciona la hora de fin">
+                                                </div>
+                                            </div>
+                                            <!-- Direccion del evento -->
+                                            <div>
+                                                <label for="addressEvent">Direccion</label>
+                                                <div class="input-group mb-4">
+                                                    <input type="text" class="form-control" placeholder="Agregue una ubicación en donde sera el evento" name="addressEvent" id="addressEvent" aria-label="addressEvent">
+                                                </div>
+                                            </div>
+                                            <!-- Agregar cuadro de direcciones de maps -->
+                                            <div>
+                                            </div>
+                                            <!-- Direccion del evento -->
+                                            <div>
+                                                <label for="referencesAddress">Referencias de la ubicación</label>
+                                                <div class="input-group mb-4">
+                                                    <textarea type="text" class="form-control" placeholder="Otorgue una descripcion breve para ubicar con mayor facilidad el lugar del evento" name="referencesAddress" id="referencesAddress" aria-label="referencesAddress"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Sobre el evento -->
+                                        <div>
+                                            <h5><lord-icon
+                                                src="https://cdn.lordicon.com/yxczfiyc.json"
+                                                trigger="hover"
+                                                style="width:24px;height:24px">
+                                            </lord-icon>Sobre el evento</h5>
+                                            <label for="descriptionEvent">Describa un breve y atractivo resumen sobre su evento</label>
+                                            <div class="input-group mb-4">
+                                                <textarea class="form-control" aria-label="descriptionEvent" id="descriptionEvent" name="descriptionEvent"></textarea>
+                                              </div>
+                                        </div>
+                                          <!-- Enviar form -->
+                                          <div class="widget-content text-center">
+                                            <button class="mr-2 btn btn-info success" type="submit">Guardar evento</button>
+                                          </div> 
+                                    </form>
+                                </div>
+                            </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>   
+    {% include '/footer.html' %}
+{% endblock %}
+
+{% block scripts %}   
+    <script src="{{ url_for('static', filename='plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/blockui/jquery.blockUI.min.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='plugins/highlight/highlight.pack.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/custom.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='assets/js/components/ui-accordions.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/scrollspyNav.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/flatpickr/flatpickr.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/noUiSlider/nouislider.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/noUiSlider/custom-nouiSlider.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/bootstrap-range-Slider/bootstrap-rangeSlider.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/flatpickr/custom-flatpickr.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/sweetalerts/sweetalert2.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/sweetalerts/custom-sweetalert.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/file-upload/file-upload-with-preview.min.js') }}"></script>
+    <script>
+        //First upload
+        var firstUpload = new FileUploadWithPreview('myFirstImage')
+
+        //Values date & time
+        var f1 = flatpickr(document.getElementById('basicFlatpickr'));
+
+        var f4 = flatpickr(document.getElementById('horaInicio'), {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            defaultDate: "13:45"
+        });
+
+        var f242 = flatpickr(document.getElementById('horaFin'), {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            defaultDate: "13:45"
+        });
+    </script>
+{% endblock %}
+
+
