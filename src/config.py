@@ -14,7 +14,7 @@ class DevelopmentConfig(Config):
 
     # Define la carpeta de carga de archivos
     # UPLOAD_FOLDER = os.path.join(os.getcwd(), 'public/imgEvent')
-    UPLOAD_FOLDER = 'public/imgEvent'
+    UPLOAD_FOLDER = 'public\imgEvent'
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 config = {

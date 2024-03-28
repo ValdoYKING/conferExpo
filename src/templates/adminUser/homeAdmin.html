@@ -19,11 +19,26 @@
     <main>
         <!-- <div id="content" class="main-content"> -->
         <div id="content" class="content">
+            <div>
+                {% with messages = get_flashed_messages() %}
+                                
+                {% if messages %}
+                <br />
+                {% for message in messages %}
+                <div class="alert alert-primary alert-dismissible" role="alert">
+                    <strong>{{ message }}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+            
+                {% endwith %}
+            </div>
             <div class="layout-px-spacing">
                 <!-- CONTENT AREA -->
                 <div class="row layout-top-spacing">
                     <div class="widget-content widget-content-area text-center">
-                        <button class="mr-2 btn btn-primary success">Success message!</button>
+                        <button class="mr-2 btn btn-primary exitoso">Success message!</button>
                     </div>
                 </div>          
                 <div class="row layout-top-spacing">
@@ -46,7 +61,18 @@
     {% include '/footer.html' %}
 {% endblock %}
 
-{% block scripts %}   
+{% block scripts %}  
+    <script>
+                //Button sweet alert
+                $('.widget-content .exitoso').on('click', function () {
+                    swal({
+                        title: 'Evento guardado!',
+                        text: "Se ha registrado con exito!",
+                        type: 'success',
+                        padding: '2em'
+                      })
+                  })
+    </script>
     <script src="{{ url_for('static', filename='plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
     <script src="{{ url_for('static', filename='assets/js/app.js') }}"></script>
 

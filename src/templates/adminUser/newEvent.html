@@ -51,7 +51,6 @@
                                         {% endif %}
                                     
                                         {% endwith %}
-                                        <h1 class="h3 mb-3 fw-normal">Ingrese sus datos por favor</h1>
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                         <!-- Imagen del evento -->
                                         <div class="custom-file-container" data-upload-id="myFirstImage">
@@ -153,7 +152,7 @@
                                         </div>
                                           <!-- Enviar form -->
                                           <div class="widget-content text-center">
-                                            <button class="mr-2 btn btn-info success" type="submit">Guardar evento</button>
+                                            <button class="mr-2 btn btn-info exitoso" type="submit">Guardar evento</button>
                                           </div> 
                                     </form>
                                 </div>
@@ -186,6 +185,15 @@
     <script src="{{ url_for('static', filename='plugins/sweetalerts/custom-sweetalert.js') }}"></script>
     <script src="{{ url_for('static', filename='plugins/file-upload/file-upload-with-preview.min.js') }}"></script>
     <script>
+        //Button sweet alert
+        $('.widget-content .exitoso').on('click', function () {
+            swal({
+                title: 'Evento guardado!',
+                text: "Se ha registrado con exito!",
+                type: 'success',
+                padding: '2em'
+              })
+          })
         //First upload
         var firstUpload = new FileUploadWithPreview('myFirstImage')
 
