@@ -1,3 +1,9 @@
 .label-grande {
     font-size: 20px important;
 }
+
+.card-container-card {
+    display: flex; /* Utiliza flexbox para controlar la distribución de las tarjetas */
+    flex-wrap: wrap; /* Permite que las tarjetas se envuelvan a la siguiente línea si no hay suficiente espacio */
+    justify-content: space-between; /* Distribuye el espacio disponible entre las tarjetas */
+}

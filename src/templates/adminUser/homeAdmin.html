@@ -1,4 +1,4 @@
-{% extends './base.html' %}
+{% extends '/base.html' %}
 {% block title %}ConferExpo - Eventos{% endblock %}
 
 {% block customCSS %}
@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='plugins/sweetalerts/sweetalert2.min.css') }}" type="text/css">
 <link rel="stylesheet" href="{{ url_for('static', filename='plugins/sweetalerts/sweetalert.css') }}" type="text/css">
 <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/components/custom-sweetalert.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/components/cards/card.css') }}" type="text/css">
 {% endblock %}
 
 {% block body %}
@@ -17,11 +18,9 @@
     <!-- Barra de navegacion -->
     {% include 'navBarUser/navAdmin.html' %}
     <main>
-        <!-- <div id="content" class="main-content"> -->
         <div id="content" class="content">
             <div>
                 {% with messages = get_flashed_messages() %}
-                                
                 {% if messages %}
                 <br />
                 {% for message in messages %}
@@ -31,49 +30,45 @@
                 </div>
                 {% endfor %}
                 {% endif %}
-            
                 {% endwith %}
             </div>
             <div class="layout-px-spacing">
-                <!-- CONTENT AREA -->
-                <div class="row layout-top-spacing">
-                    <div class="widget-content widget-content-area text-center">
-                        <button class="mr-2 btn btn-primary exitoso">Success message!</button>
-                    </div>
-                </div>          
-                <div class="row layout-top-spacing">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-12 layout-spacing">
-                        <div class="widget widget-content-area br-4">
-                            <div class="widget-one">
-
-                                <h6>Kick Start you new project with ease!</h6>
-
-                                <p class="mb-0 mt-3">With CORK starter kit, you can begin your work without any hassle. The starter page is highly optimized which gives you freedom to start with minimal code and add only the desired components and plugins required for your project.</p>
-
+                <div class="widget-content widget-content-area layout-top-spacing">
+                    <div class="card-container-card"> <!-- Contenedor para las tarjetas -->
+                        {% for evento in eventos %}
+                        <div class="card component-card_9">
+                            {% if evento.imagen %}
+                            <img class="card-img-top" src="{{ url_for('show_image', filename=evento.imagen)}}" alt="Imagen del evento {{ evento.nombre }}">
+                            {% else %}
+                            <img src="https://via.placeholder.com/150" class="card-img-top" alt="Imagen no disponible">
+                            {% endif %}
+                            <div class="card-body">
+                                <p class="meta-date">{{ evento.fecha }}</p>
+                                <h5 class="card-title">{{ evento.nombre }}</h5>
+                                <p class="card-text">{{ evento.resumen }}</p>+
+                                <input type="text" value="{{ evento.fecha }}">
+            
+                                <div class="meta-info">
+                                    <div>
+                                        <a href="{{ url_for('editarEvento', _id=evento._id) }}" class="btn btn-secondary btn-rounded mb-2">Ver detalles</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        {% endfor %}
                     </div>
                 </div>
-                <!-- CONTENT AREA -->
-            </div>
+            </div>                   
         </div>
     </main>   
     {% include '/footer.html' %}
+</body>
 {% endblock %}
 
+
 {% block scripts %}  
-    <script>
-                //Button sweet alert
-                $('.widget-content .exitoso').on('click', function () {
-                    swal({
-                        title: 'Evento guardado!',
-                        text: "Se ha registrado con exito!",
-                        type: 'success',
-                        padding: '2em'
-                      })
-                  })
-    </script>
     <script src="{{ url_for('static', filename='plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='plugins/blockui/jquery.blockUI.min.js') }}"></script>
     <script src="{{ url_for('static', filename='assets/js/app.js') }}"></script>
 
     <script src="{{ url_for('static', filename='plugins/highlight/highlight.pack.js') }}"></script>

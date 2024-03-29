@@ -4,5 +4,18 @@
 
 {% block body %}
 <h1>Bienvenido, {{ current_user.fullname }}</h1>
+<div>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <br />
+    {% for message in messages %}
+    <div class="alert alert-primary alert-dismissible" role="alert">
+        <strong>{{ message }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
 <a class="btn btn-secondary" href="{{ url_for('logout') }}">Logout</a>
 {% endblock %}

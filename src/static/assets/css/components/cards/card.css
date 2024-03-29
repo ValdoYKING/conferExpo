@@ -306,10 +306,10 @@
 .component-card_9 {
   border: 1px solid #e0e6ed;
   border-radius: 6px;
-  width: 22rem;
-  margin: 0 auto;
+  width: calc(25% - 20px); /* Ancho ajustable para dejar espacio entre las tarjetas */
+  margin: 0 10px 20px 10px; /* Espacio entre las tarjetas */
   -webkit-box-shadow: 4px 6px 10px -3px #bfc9d4;
-  box-shadow: 4px 6px 10px -3px #bfc9d4; }
+  box-shadow: 4px 6px 10px -3px #bfc9d4;}
   .component-card_9 .card-body {
     padding: 22px 20px; }
   .component-card_9 .meta-date {

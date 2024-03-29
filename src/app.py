@@ -1,10 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager, login_user, logout_user, login_required
+from flask import send_from_directory, abort
 import os
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from werkzeug.utils import secure_filename
+from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
+from wtforms import StringField, SubmitField
+from wtforms import StringField, TextAreaField, DateTimeField
+from wtforms.validators import DataRequired, Optional
+
 
 from config import config
 
@@ -17,6 +24,10 @@ from models.entities.User import User
 from models.entities.Evento import Evento
 
 app = Flask(__name__)
+
+IMG_FOLDER = os.path.join("public", "imgEvent")
+
+app.config["UPLOAD_FOLDER"] = IMG_FOLDER
 
 csrf = CSRFProtect()
 login_manager_app = LoginManager(app)
@@ -103,20 +114,27 @@ def logout():
 def home():
     return render_template('home.html')
 
-# Rutas para administrador 
-@app.route('/homeAdmin')
+@app.route("/homeAdmin")
 @login_required
 def homeAdmin():
-    return render_template('adminUser/homeAdmin.html')
+    # Obtener todos los eventos
+    eventos, mensaje = ModelEvento.get_all_eventos(db)
+
+    if eventos is None:
+        return render_template("adminUser/homeAdmin.html", error=mensaje)
+
+    return render_template("adminUser/homeAdmin.html", eventos=eventos)
+
+
+
+def allowed_file(filename):
+    allowed_extensions = app.config['ALLOWED_EXTENSIONS']
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 @app.route('/newEvent')
 @login_required
 def newEvent():
     return render_template('adminUser/newEvent.html')
-
-def allowed_file(filename):
-    allowed_extensions = app.config['ALLOWED_EXTENSIONS']
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 
 @app.route('/registerEvent', methods=['GET', 'POST'])
@@ -169,7 +187,8 @@ def registerEvent():
             aforo=aforo,
             duracion_estimada=duracion_estimada,
             descripcion=descripcion,
-            imagen=os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            imagen=filename
+            #imagen=os.path.join(app.config['UPLOAD_FOLDER'], filename)
         )
 
         # Guardar el nuevo evento en la base de datos
@@ -183,6 +202,98 @@ def registerEvent():
             return redirect(url_for('registerEvent'))
     else:
         return render_template('adminUser/newEvent.html')
+    
+@app.route('/mostrar_imagen/<filename>')
+def mostrar_imagen(filename):
+    try:
+        # Suponiendo que tienes una carpeta llamada 'public/imgEvent' donde guardas tus imágenes
+        # y que 'UPLOAD_FOLDER' está configurado correctamente en tu configuración
+        return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    except FileNotFoundError:
+        # Si no se encuentra el archivo, regresa un error 404
+        abort(404)
+        
+@app.route('/show_image/<filename>')
+def show_image(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+    
+@app.route('/showEvent/<_id>')
+@login_required
+def showEvent(_id):
+    evento = ModelEvento.get_evento_by_id(db, _id)
+    if evento:
+        return render_template('adminUser/showEvent.html', evento=evento)
+    else:
+        flash('El evento no existe', 'error')
+        return redirect(url_for('homeAdmin'))
+   
+@app.route('/editarEvento/<_id>', methods=['GET', 'POST'])
+@login_required
+def editarEvento(_id):
+    if request.method == 'GET':
+        testNumeros = 1, 2, 3, 4, 5, 6, 7, 8
+        resultData = ModelEvento.get_evento_by_id(db, _id)
+        print(resultData)
+        if not resultData:
+            flash('El evento no existe', 'error')
+            return redirect(url_for('homeAdmin'))
+        return render_template('adminUser/editEvent.html', eventoID=resultData, testNumeros=testNumeros)
+
+    if request.method == 'POST':
+       # Obtener los datos del formulario
+       nombre = request.form['eventName']
+       resumen = request.form['resumeEvent']
+       fecha = request.form['dateEvent']
+       fecha_hora_inicio = request.form['starHour']
+       fecha_hora_fin = request.form['finishHour']
+       lugar = request.form['addressEvent']
+       referencias = request.form['referencesAddress']
+       aforo = request.form['aforo']
+       duracion_estimada = request.form['duracion_estimada']
+       descripcion = request.form['descriptionEvent']
+       # ... obtener otros datos del formulario ...
+       # Obtener el evento de la base de datos
+       evento = ModelEvento.get_evento_by_id(db, _id)
+       if not evento:
+           flash('El evento no existe', 'error')
+           return redirect(url_for('homeAdmin'))
+       # Validar datos e imagen (similar al código de 'registerEvent')
+       imagen = request.files['imagen']
+       # Verificar si se proporcionó una nueva imagen
+       if imagen and imagen.filename != '':
+           if allowed_file(imagen.filename):
+               # Se asegura que el nombre del archivo sea seguro
+               filename = secure_filename(imagen.filename)
+               # Se guarda la nueva imagen en la carpeta deseada
+               imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+               # Actualizar la imagen en el evento solo si se proporciona una nueva imagen
+               evento.imagen = filename
+           else:
+               flash('El formato de archivo de imagen no es válido')
+               return redirect(request.url)
+       # Actualizar los campos del evento
+       evento.nombre = nombre
+       evento.resumen = resumen
+       evento.fecha = fecha
+       evento.fecha_hora_inicio = fecha_hora_inicio
+       evento.fecha_hora_fin = fecha_hora_fin
+       evento.lugar = lugar
+       evento.referencias = referencias
+       evento.aforo = aforo
+       evento.duracion_estimada = duracion_estimada
+       evento.descripcion = descripcion
+       # Actualizar el evento en la base de datos
+       success, message = ModelEvento.update_evento(db, _id, evento)
+
+       if success:
+           flash(message)
+           return redirect(url_for('homeAdmin'))
+       else:
+           flash(message, 'error')
+           return redirect(url_for('editarEvento', _id=_id))
+
+
 
 @app.route('/protected')
 @login_required

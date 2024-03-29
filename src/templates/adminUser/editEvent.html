@@ -37,7 +37,10 @@
                             </div>
                             <div class="widget widget-content-area ">
                                 <div class="widget-one form-group">
-                                    <form class="form-event" action="/registerEvent" method="POST" enctype="multipart/form-data">
+                                    {% if (eventoID) %}
+                                    {{ eventoID.id }}
+                                    <!-- <form class="form-event" action="/editarEvento/{{ eventoID._id }}" method="POST" enctype="multipart/form-data"> -->
+                                    <form class="form-event" action="{{ url_for('editarEvento', _id = eventoID.id ) }}" method="POST" enctype="multipart/form-data">
                                         {% with messages = get_flashed_messages() %}
                                 
                                         {% if messages %}
@@ -52,20 +55,52 @@
                                     
                                         {% endwith %}
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <!-- Imagen del evento -->
-                                        <div class="custom-file-container" data-upload-id="myFirstImage">
-                                            <label><lord-icon
-                                                src="https://cdn.lordicon.com/smwmetfi.json"
-                                                trigger="hover"
-                                                colors="primary:#6f42c1"
-                                                style="width:24px;height:24px">
-                                            </lord-icon> Imagen del evento <a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image">x</a></label>
-                                            <label class="custom-file-container__custom-file" >
-                                                <input type="file" class="custom-file-container__custom-file__custom-file-input" accept="image/*" name="imagen">
-                                                <input type="hidden" name="MAX_FILE_SIZE" value="10485760" />
-                                                <span class="custom-file-container__custom-file__custom-file-control"></span>
-                                            </label>
-                                            <div class="custom-file-container__image-preview"></div>
+                                        <div class="card component-card_1">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-3"></div>
+                                                    <div class="col-md-6">
+                                                        <div class="infobox-1">
+                                                            <img id="imagenPreview" src="{{ url_for('show_image', filename=eventoID.imagen)}}" alt="Imagen del evento {{ eventoID.nombre }}" class="img-fluid rounded">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <!-- Imagen del evento -->
+                                            <div class="custom-file-container" data-upload-id="myFirstImage">
+                                                <label><lord-icon
+                                                    src="https://cdn.lordicon.com/smwmetfi.json"
+                                                    trigger="hover"
+                                                    colors="primary:#6f42c1"
+                                                    style="width:24px;height:24px">
+                                                </lord-icon> Imagen del evento <a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image">x</a></label>
+                                                <label class="custom-file-container__custom-file" >
+                                                    <input type="file" class="custom-file-container__custom-file__custom-file-input" accept="image/*" name="imagen" value="{{ eventoID.imagen }}">
+                                                    <input type="hidden" name="MAX_FILE_SIZE" value="10485760" />
+                                                    <span class="custom-file-container__custom-file__custom-file-control"></span>
+                                                </label>
+                                                <!-- Vista previa de la imagen -->
+                                                <div class="custom-file-container__image-preview">
+                                                    <img id="imagenPreviewNew" src="{{ url_for('show_image', filename=eventoID.imagen)}}" alt="Vista previa de la nueva imagen" class="img-fluid rounded">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="toggleAccordion">
+                                            <div class="card">
+                                                <div class="card-header" id="...">
+                                                    <section class="mb-0 mt-0">
+                                                        <div role="menu" class="collapsed" data-toggle="collapse" data-target="#defaultAccordionOne" aria-expanded="true" aria-controls="defaultAccordionOne">
+                                                            Cambiar imagen del evento  <div class="icons"><svg> ... </svg></div>
+                                                        </div>
+                                                    </section>
+                                                </div>
+                                                <div id="defaultAccordionOne" class="collapse" aria-labelledby="..." data-parent="#toggleAccordion">
+                                                    
+                                                </div>
+                                            </div>
                                         </div>
                                         <!-- Datos del evento -->
                                         <div>
@@ -75,10 +110,10 @@
                                                 style="width:24px;height:24px">
                                             </lord-icon>Datos del evento</h5>
                                             <!-- Noimbre del evento -->
-                                            <div>
+                                            <div>                                                
                                                 <label for="eventName" class="label-grande">Nombre del evento</label>
                                                 <div class="input-group mb-4">
-                                                    <input type="text" class="form-control" placeholder="Nombre del evento" name="eventName" id="eventName" aria-label="eventName">
+                                                    <input type="text" class="form-control" placeholder="Nombre del evento" name="eventName" id="eventName" aria-label="eventName"  value="{{ eventoID.nombre }}">
                                                 </div>
                                             </div>
 
@@ -86,7 +121,7 @@
                                             <div>
                                                 <label for="resumeEvent">Un breve resumen</label>
                                                 <div class="input-group mb-4">
-                                                    <input type="text" class="form-control" placeholder="Otorga una breve descripcion acerca del evento" name="resumeEvent" id="resumeEvent" aria-label="resumeEvent">
+                                                    <input type="text" class="form-control" placeholder="Otorga una breve descripcion acerca del evento" name="resumeEvent" id="resumeEvent" aria-label="resumeEvent" value="{{ eventoID.resumen }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -101,28 +136,28 @@
                                             <div>
                                                 <label for="dateEvent" class="label-grande">Fecha</label>
                                                 <div class="form-group mb-4">
-                                                    <input id="basicFlatpickr"  name="dateEvent" value="2024-04-04" class="form-control flatpickr flatpickr-input active" type="text" placeholder="Selecciona la fecha">
+                                                    <input id="basicFlatpickr"  name="dateEvent" class="form-control flatpickr flatpickr-input active" type="text" placeholder="Selecciona la fecha" value="{{ eventoID.fecha }}">
                                                 </div>
                                             </div>
                                             <!-- hora de inicio -->
                                             <div>
                                                 <label for="horaInicio">Hora de inicio</label>
                                                 <div class="form-group mb-4">
-                                                    <input id="horaInicio" name="starHour" class="form-control flatpickr flatpickr-input active" type="text" placeholder="Selecciona la hora de inicio">
+                                                    <input id="horaInicio" name="starHour" class="form-control flatpickr flatpickr-input active" type="text" placeholder="Selecciona la hora de inicio" value="{{ eventoID.fecha_hora_inicio }}">
                                                 </div>
                                             </div>
                                             <!-- Hora de fin -->
                                             <div>
                                                 <label for="horaFin">Hora de fin</label>
                                                 <div class="form-group mb-4">
-                                                    <input id="horaFin" class="form-control flatpickr flatpickr-input active" name="finishHour" type="text" placeholder="Selecciona la hora de fin">
+                                                    <input id="horaFin" class="form-control flatpickr flatpickr-input active" name="finishHour" type="text" placeholder="Selecciona la hora de fin" value="{{ eventoID.fecha_hora_fin }}">
                                                 </div>
                                             </div>
                                             <!-- Direccion del evento -->
                                             <div>
                                                 <label for="addressEvent">Direccion</label>
                                                 <div class="input-group mb-4">
-                                                    <input type="text" class="form-control" placeholder="Agregue una ubicación en donde sera el evento" name="addressEvent" id="addressEvent" aria-label="addressEvent">
+                                                    <input type="text" class="form-control" placeholder="Agregue una ubicación en donde sera el evento" name="addressEvent" id="addressEvent" aria-label="addressEvent" value="{{ eventoID.lugar }}">
                                                 </div>
                                             </div>
                                             <!-- Agregar cuadro de direcciones de maps -->
@@ -134,7 +169,7 @@
                                             <div>
                                                 <label for="referencesAddress">Referencias de la ubicación</label>
                                                 <div class="input-group mb-4">
-                                                    <textarea type="text" class="form-control" placeholder="Otorgue una descripcion breve para ubicar con mayor facilidad el lugar del evento" name="referencesAddress" id="referencesAddress" aria-label="referencesAddress"></textarea>
+                                                    <textarea type="text" class="form-control" placeholder="Otorgue una descripcion breve para ubicar con mayor facilidad el lugar del evento" name="referencesAddress" id="referencesAddress" aria-label="referencesAddress">{{ eventoID.referencias }}</textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -147,7 +182,7 @@
                                             </lord-icon>Sobre el evento</h5>
                                             <label for="descriptionEvent">Describa un breve y atractivo resumen sobre su evento</label>
                                             <div class="input-group mb-4">
-                                                <textarea class="form-control" aria-label="descriptionEvent" id="descriptionEvent" name="descriptionEvent"></textarea>
+                                                <textarea class="form-control" aria-label="descriptionEvent" id="descriptionEvent" name="descriptionEvent">{{ eventoID.descripcion }}</textarea>
                                               </div>
                                         </div>
                                           <!-- Enviar form -->
@@ -155,6 +190,13 @@
                                             <button class="mr-2 btn btn-info exitoso" type="submit">Guardar evento</button>
                                           </div> 
                                     </form>
+                                    {% else %}
+                                    <div class="col-12">
+                                        <h2 class="text-center">
+                                            No existe el Coche
+                                        </h2>
+                                    </div>
+                              {% endif %}
                                 </div>
                             </div>
                         
@@ -204,15 +246,61 @@
             enableTime: true,
             noCalendar: true,
             dateFormat: "H:i",
-            defaultDate: "13:45"
+            defaultDate: ""
         });
 
         var f242 = flatpickr(document.getElementById('horaFin'), {
             enableTime: true,
             noCalendar: true,
             dateFormat: "H:i",
-            defaultDate: "13:45"
+            defaultDate: ""
         });
+
+// Verificar si ya hay una imagen cargada al cargar la página
+if (eventoID.imagen) {
+    // Mostrar la imagen existente en el contenedor de vista previa
+    var imagePreview = document.querySelector(".custom-file-container__image-preview");
+    imagePreview.style.backgroundImage = "url('" + eventoID.imagen + "')";
+    // Ocultar la imagen base si existe
+    var baseImage = document.querySelector(".custom-file-container__base-image");
+    if (baseImage) {
+        baseImage.style.display = "none";
+    }
+}
+
+// Manejar la carga de una nueva imagen
+var inputFile = document.querySelector(".custom-file-container__custom-file__custom-file-input");
+inputFile.addEventListener("change", function(event) {
+    var input = event.target;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        // Actualizar la vista previa de la imagen
+        var imagePreview = document.querySelector(".custom-file-container__image-preview");
+        imagePreview.style.backgroundImage = "url('" + e.target.result + "')";
+        // Ocultar la imagen base si existe
+        var baseImage = document.querySelector(".custom-file-container__base-image");
+        if (baseImage) {
+            baseImage.style.display = "none";
+        }
+    }
+    reader.readAsDataURL(input.files[0]);
+});
+
+// Manejar la eliminación de la imagen seleccionada
+var clearButton = document.querySelector(".custom-file-container__image-clear");
+clearButton.addEventListener("click", function() {
+    // Restaurar la imagen base
+    var baseImage = document.querySelector(".custom-file-container__base-image");
+    if (baseImage) {
+        baseImage.style.display = "block";
+    }
+    // Limpiar la vista previa de la imagen
+    var imagePreview = document.querySelector(".custom-file-container__image-preview");
+    imagePreview.style.backgroundImage = "none";
+    // Limpiar el campo de entrada de archivos
+    var inputFile = document.querySelector(".custom-file-container__custom-file__custom-file-input");
+    inputFile.value = "";
+});
     </script>
 {% endblock %}
 
