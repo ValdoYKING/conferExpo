@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_wtf.csrf import CSRFProtect
-from flask_login import LoginManager, login_user, logout_user, login_required
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask import send_from_directory, abort
 import os
 from pymongo import MongoClient
@@ -11,6 +11,7 @@ from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, SubmitField
 from wtforms import StringField, TextAreaField, DateTimeField
 from wtforms.validators import DataRequired, Optional
+from datetime import datetime
 
 
 from config import config
@@ -99,7 +100,71 @@ def login():
 @app.route('/homeUser')
 @login_required
 def homeUser():
-    return render_template('userConferExpo/homeUser.html')
+    nombre_usuario = current_user.username
+    # Obtener todos los eventos
+    eventos, mensaje = ModelEvento.get_all_eventos(db)
+
+    if eventos is None:
+        return render_template("userConferExpo/homeUser.html", error=mensaje)
+
+    return render_template("userConferExpo/homeUser.html", eventos=eventos, nombre_usuario=nombre_usuario)
+
+@app.route('/showEventUser/<_id>', methods=['GET', 'POST'])
+@login_required
+def showEventUser(_id):
+    if request.method == 'GET':
+        eventoID = ModelEvento.get_evento_by_id(db, _id)
+        if not eventoID:
+            flash('El evento no existe', 'error')
+            return redirect(url_for('homeUser'))
+
+        # Convertimos la fecha al formato deseado
+        fecha = datetime.strptime(eventoID.fecha, "%Y-%m-%d")
+        dias_semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+        meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
+        nombre_dia_semana = dias_semana[fecha.weekday()]
+        nombre_mes = meses[fecha.month - 1]
+        fecha_formateada = f"{nombre_dia_semana}, {fecha.day} de {nombre_mes} de {fecha.year}"
+        # Obtenemos el número de usuarios registrados
+        num_usuarios_registrados = len(eventoID.usuarios_registrados)
+        # Convertimos el aforo a un entero
+        aforo = int(eventoID.aforo)
+         # Calculamos la disponibilidad
+        disponibilidad = aforo - len(eventoID.usuarios_registrados)
+        # Convertir la fecha y hora del evento a un objeto datetime
+        fecha_evento = eventoID.fecha + ' ' + eventoID.fecha_hora_inicio
+        fecha_evento_datetime = datetime.strptime(fecha_evento, '%Y-%m-%d %H:%M')
+
+        # Obtener la fecha y hora actual
+        fecha_actual = datetime.now()
+
+        # Calcular el tiempo restante
+        tiempo_restante = fecha_evento_datetime - fecha_actual
+        
+        # Dividir el tiempo restante en días, horas, minutos y segundos
+        dias_restantes = tiempo_restante.days
+        horas_restantes, segundos_restantes = divmod(tiempo_restante.seconds, 3600)
+        minutos_restantes, segundos_restantes = divmod(segundos_restantes, 60)
+        hora_inicio, minutos_inicio = eventoID.fecha_hora_inicio.split(':')
+        fecha_hora_inicio = {'hora': int(hora_inicio), 'minutos': int(minutos_inicio)}
+        # Obtener el año, mes y día de la fecha
+        year = fecha.year
+        month = fecha.month
+        day = fecha.day
+        
+        return render_template('userConferExpo/showEventUser.html', eventoID=eventoID, fecha_formateada=fecha_formateada, num_usuarios_registrados=num_usuarios_registrados, disponibilidad=disponibilidad,dias_restantes=dias_restantes, horas_restantes=horas_restantes, minutos_restantes=minutos_restantes, segundos_restantes=segundos_restantes, fecha_hora_inicio=fecha_hora_inicio, year=year, month=month, day=day)
+    
+@app.route('/assistEvent')
+@login_required
+def assistEvent():
+    nombre_usuario = current_user.username
+    # Obtener todos los eventos
+    eventos, mensaje = ModelEvento.get_all_eventos(db)
+
+    if eventos is None:
+        return render_template("userConferExpo/homeUser.html", error=mensaje)
+
+    return render_template("userConferExpo/homeUser.html", eventos=eventos, nombre_usuario=nombre_usuario)
 
 
 
@@ -117,13 +182,14 @@ def home():
 @app.route("/homeAdmin")
 @login_required
 def homeAdmin():
+    nombre_usuario = current_user.username
     # Obtener todos los eventos
     eventos, mensaje = ModelEvento.get_all_eventos(db)
 
     if eventos is None:
         return render_template("adminUser/homeAdmin.html", error=mensaje)
 
-    return render_template("adminUser/homeAdmin.html", eventos=eventos)
+    return render_template("adminUser/homeAdmin.html", eventos=eventos, nombre_usuario=nombre_usuario)
 
 
 
@@ -218,27 +284,61 @@ def show_image(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
     
-@app.route('/showEvent/<_id>')
+@app.route('/showEvent/<_id>', methods=['GET', 'POST'])
 @login_required
 def showEvent(_id):
-    evento = ModelEvento.get_evento_by_id(db, _id)
-    if evento:
-        return render_template('adminUser/showEvent.html', evento=evento)
-    else:
-        flash('El evento no existe', 'error')
-        return redirect(url_for('homeAdmin'))
+    if request.method == 'GET':
+        eventoID = ModelEvento.get_evento_by_id(db, _id)
+        if not eventoID:
+            flash('El evento no existe', 'error')
+            return redirect(url_for('homeAdmin'))
+
+        # Convertimos la fecha al formato deseado
+        fecha = datetime.strptime(eventoID.fecha, "%Y-%m-%d")
+        dias_semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+        meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
+        nombre_dia_semana = dias_semana[fecha.weekday()]
+        nombre_mes = meses[fecha.month - 1]
+        fecha_formateada = f"{nombre_dia_semana}, {fecha.day} de {nombre_mes} de {fecha.year}"
+        # Obtenemos el número de usuarios registrados
+        num_usuarios_registrados = len(eventoID.usuarios_registrados)
+        # Convertimos el aforo a un entero
+        aforo = int(eventoID.aforo)
+         # Calculamos la disponibilidad
+        disponibilidad = aforo - len(eventoID.usuarios_registrados)
+        # Convertir la fecha y hora del evento a un objeto datetime
+        fecha_evento = eventoID.fecha + ' ' + eventoID.fecha_hora_inicio
+        fecha_evento_datetime = datetime.strptime(fecha_evento, '%Y-%m-%d %H:%M')
+
+        # Obtener la fecha y hora actual
+        fecha_actual = datetime.now()
+
+        # Calcular el tiempo restante
+        tiempo_restante = fecha_evento_datetime - fecha_actual
+        
+        # Dividir el tiempo restante en días, horas, minutos y segundos
+        dias_restantes = tiempo_restante.days
+        horas_restantes, segundos_restantes = divmod(tiempo_restante.seconds, 3600)
+        minutos_restantes, segundos_restantes = divmod(segundos_restantes, 60)
+        hora_inicio, minutos_inicio = eventoID.fecha_hora_inicio.split(':')
+        fecha_hora_inicio = {'hora': int(hora_inicio), 'minutos': int(minutos_inicio)}
+        # Obtener el año, mes y día de la fecha
+        year = fecha.year
+        month = fecha.month
+        day = fecha.day
+        
+        return render_template('adminUser/showEvent.html', eventoID=eventoID, fecha_formateada=fecha_formateada, num_usuarios_registrados=num_usuarios_registrados, disponibilidad=disponibilidad,dias_restantes=dias_restantes, horas_restantes=horas_restantes, minutos_restantes=minutos_restantes, segundos_restantes=segundos_restantes, fecha_hora_inicio=fecha_hora_inicio, year=year, month=month, day=day)
    
 @app.route('/editarEvento/<_id>', methods=['GET', 'POST'])
 @login_required
 def editarEvento(_id):
     if request.method == 'GET':
-        testNumeros = 1, 2, 3, 4, 5, 6, 7, 8
         resultData = ModelEvento.get_evento_by_id(db, _id)
         print(resultData)
         if not resultData:
             flash('El evento no existe', 'error')
             return redirect(url_for('homeAdmin'))
-        return render_template('adminUser/editEvent.html', eventoID=resultData, testNumeros=testNumeros)
+        return render_template('adminUser/editEvent.html', eventoID=resultData)
 
     if request.method == 'POST':
        # Obtener los datos del formulario

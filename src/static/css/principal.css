@@ -7,3 +7,19 @@
     flex-wrap: wrap; /* Permite que las tarjetas se envuelvan a la siguiente línea si no hay suficiente espacio */
     justify-content: space-between; /* Distribuye el espacio disponible entre las tarjetas */
 }
+
+.imagen-grande {
+    max-width: 100%; /* Asegura que la imagen no supere el ancho del contenedor */
+    height: auto; /* Hace que la altura de la imagen se ajuste automáticamente para mantener la proporción */
+    display: block; /* Asegura que la imagen se muestre como un bloque */
+    margin: 0 auto; /* Centra la imagen horizontalmente */
+    border-radius: 18px; /* Agrega un borde redondeado de 10px */
+}
+
+.blockquote pre {
+    font-family: inherit; /* Hereda la fuente del elemento padre (blockquote) */
+    font-size: inherit; /* Hereda el tamaño de fuente del elemento padre (blockquote) */
+    line-height: inherit; /* Hereda la altura de línea del elemento padre (blockquote) */
+    margin: 0; /* Elimina cualquier margen que pueda tener el elemento <pre> */
+    white-space: pre-wrap; /* Conserva los saltos de línea y los espacios en blanco */
+}

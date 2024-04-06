@@ -1,5 +1,5 @@
 currentYear = new Date().getFullYear()
-increaseTwoYears = currentYear + 2;
+increaseTwoYears = currentYear + 1;
 getFullFormat = `${increaseTwoYears}/10/10`;
 
 $('#cd-simple').countdown(getFullFormat, function(event) {

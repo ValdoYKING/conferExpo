@@ -29,16 +29,15 @@
                     <div class="container">
                             <div id="wizards_pills" class="col-lg-12">
                                 <div class="seperator-header">
-                                    <h4 class="">Nuevo</h4>
+                                    <h4 class="">Editar Evento {{ eventoID.nombre }}</h4>
                                 </div>
                             </div>                      
                             <div class="seperator-header">
-                                <h3>Registrar nuevo evento</h3>
+                                <h3>Editar evento "{{ eventoID.nombre }}"</h3>
                             </div>
                             <div class="widget widget-content-area ">
                                 <div class="widget-one form-group">
                                     {% if (eventoID) %}
-                                    {{ eventoID.id }}
                                     <!-- <form class="form-event" action="/editarEvento/{{ eventoID._id }}" method="POST" enctype="multipart/form-data"> -->
                                     <form class="form-event" action="{{ url_for('editarEvento', _id = eventoID.id ) }}" method="POST" enctype="multipart/form-data">
                                         {% with messages = get_flashed_messages() %}
@@ -68,26 +67,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="card-body">
-                                            <!-- Imagen del evento -->
-                                            <div class="custom-file-container" data-upload-id="myFirstImage">
-                                                <label><lord-icon
-                                                    src="https://cdn.lordicon.com/smwmetfi.json"
-                                                    trigger="hover"
-                                                    colors="primary:#6f42c1"
-                                                    style="width:24px;height:24px">
-                                                </lord-icon> Imagen del evento <a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image">x</a></label>
-                                                <label class="custom-file-container__custom-file" >
-                                                    <input type="file" class="custom-file-container__custom-file__custom-file-input" accept="image/*" name="imagen" value="{{ eventoID.imagen }}">
-                                                    <input type="hidden" name="MAX_FILE_SIZE" value="10485760" />
-                                                    <span class="custom-file-container__custom-file__custom-file-control"></span>
-                                                </label>
-                                                <!-- Vista previa de la imagen -->
-                                                <div class="custom-file-container__image-preview">
-                                                    <img id="imagenPreviewNew" src="{{ url_for('show_image', filename=eventoID.imagen)}}" alt="Vista previa de la nueva imagen" class="img-fluid rounded">
-                                                </div>
-                                            </div>
-                                        </div>
                                         <div id="toggleAccordion">
                                             <div class="card">
                                                 <div class="card-header" id="...">
@@ -98,7 +77,26 @@
                                                     </section>
                                                 </div>
                                                 <div id="defaultAccordionOne" class="collapse" aria-labelledby="..." data-parent="#toggleAccordion">
-                                                    
+                                                    <div class="card-body">
+                                                        <!-- Imagen del evento -->
+                                                        <div class="custom-file-container" data-upload-id="myFirstImage">
+                                                            <label><lord-icon
+                                                                src="https://cdn.lordicon.com/smwmetfi.json"
+                                                                trigger="hover"
+                                                                colors="primary:#6f42c1"
+                                                                style="width:24px;height:24px">
+                                                            </lord-icon> Imagen del evento <a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image">x</a></label>
+                                                            <label class="custom-file-container__custom-file" >
+                                                                <input type="file" class="custom-file-container__custom-file__custom-file-input" accept="image/*" name="imagen" value="{{ eventoID.imagen }}">
+                                                                <input type="hidden" name="MAX_FILE_SIZE" value="10485760" />
+                                                                <span class="custom-file-container__custom-file__custom-file-control"></span>
+                                                            </label>
+                                                            <!-- Vista previa de la imagen -->
+                                                            <div class="custom-file-container__image-preview">
+                                                                <img id="imagenPreviewNew" src="{{ url_for('show_image', filename=eventoID.imagen)}}" alt="Vista previa de la nueva imagen" class="img-fluid rounded">
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -122,6 +120,13 @@
                                                 <label for="resumeEvent">Un breve resumen</label>
                                                 <div class="input-group mb-4">
                                                     <input type="text" class="form-control" placeholder="Otorga una breve descripcion acerca del evento" name="resumeEvent" id="resumeEvent" aria-label="resumeEvent" value="{{ eventoID.resumen }}">
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label for="aforo">Aforo disponible (lugares)</label>
+                                                <div class="input-group mb-4">
+                                                    <input type="text" class="form-control" placeholder="Agregue un estimado de lugares a disponibilidad" name="aforo" id="aforo" aria-label="aforo" value="{{ eventoID.aforo }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -162,7 +167,6 @@
                                             </div>
                                             <!-- Agregar cuadro de direcciones de maps -->
                                             <div>
-                                                <input type="hidden" name="aforo" value="66" />
                                                 <input type="hidden" name="duracion_estimada" value="3" />
                                             </div>
                                             <!-- Direccion del evento -->
@@ -230,8 +234,8 @@
         //Button sweet alert
         $('.widget-content .exitoso').on('click', function () {
             swal({
-                title: 'Evento guardado!',
-                text: "Se ha registrado con exito!",
+                title: 'Evento modificado!',
+                text: "Se han guardado los cambios!",
                 type: 'success',
                 padding: '2em'
               })
@@ -256,51 +260,6 @@
             defaultDate: ""
         });
 
-// Verificar si ya hay una imagen cargada al cargar la página
-if (eventoID.imagen) {
-    // Mostrar la imagen existente en el contenedor de vista previa
-    var imagePreview = document.querySelector(".custom-file-container__image-preview");
-    imagePreview.style.backgroundImage = "url('" + eventoID.imagen + "')";
-    // Ocultar la imagen base si existe
-    var baseImage = document.querySelector(".custom-file-container__base-image");
-    if (baseImage) {
-        baseImage.style.display = "none";
-    }
-}
-
-// Manejar la carga de una nueva imagen
-var inputFile = document.querySelector(".custom-file-container__custom-file__custom-file-input");
-inputFile.addEventListener("change", function(event) {
-    var input = event.target;
-    var reader = new FileReader();
-    reader.onload = function(e) {
-        // Actualizar la vista previa de la imagen
-        var imagePreview = document.querySelector(".custom-file-container__image-preview");
-        imagePreview.style.backgroundImage = "url('" + e.target.result + "')";
-        // Ocultar la imagen base si existe
-        var baseImage = document.querySelector(".custom-file-container__base-image");
-        if (baseImage) {
-            baseImage.style.display = "none";
-        }
-    }
-    reader.readAsDataURL(input.files[0]);
-});
-
-// Manejar la eliminación de la imagen seleccionada
-var clearButton = document.querySelector(".custom-file-container__image-clear");
-clearButton.addEventListener("click", function() {
-    // Restaurar la imagen base
-    var baseImage = document.querySelector(".custom-file-container__base-image");
-    if (baseImage) {
-        baseImage.style.display = "block";
-    }
-    // Limpiar la vista previa de la imagen
-    var imagePreview = document.querySelector(".custom-file-container__image-preview");
-    imagePreview.style.backgroundImage = "none";
-    // Limpiar el campo de entrada de archivos
-    var inputFile = document.querySelector(".custom-file-container__custom-file__custom-file-input");
-    inputFile.value = "";
-});
     </script>
 {% endblock %}
 

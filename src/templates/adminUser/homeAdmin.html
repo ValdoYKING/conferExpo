@@ -17,6 +17,7 @@
 <body>
     <!-- Barra de navegacion -->
     {% include 'navBarUser/navAdmin.html' %}
+    <br><br><br>
     <main>
         <div id="content" class="content">
             <div>
@@ -45,12 +46,34 @@
                             <div class="card-body">
                                 <p class="meta-date">{{ evento.fecha }}</p>
                                 <h5 class="card-title">{{ evento.nombre }}</h5>
-                                <p class="card-text">{{ evento.resumen }}</p>+
-                                <input type="text" value="{{ evento.fecha }}">
-            
+                                <p class="card-text">{{ evento.resumen }}</p>            
                                 <div class="meta-info">
-                                    <div>
-                                        <a href="{{ url_for('editarEvento', _id=evento._id) }}" class="btn btn-secondary btn-rounded mb-2">Ver detalles</a>
+                                    <div class="meta-user">
+                                        <div class="user-name">
+                                            <a href="{{ url_for('showEvent', _id=evento._id) }}" class="btn btn-secondary btn-rounded mb-1">Ver detalles</a>
+                                        </div>
+                                        <div class="avatar">
+                                            <a href="{{ url_for('editarEvento', _id=evento._id) }}"><lord-icon
+                                                src="https://cdn.lordicon.com/wuvorxbv.json"
+                                                trigger="hover"
+                                                colors="primary:#121331,secondary:#6f42c1"
+                                                style="width:30px;height:30px">
+                                            </lord-icon></a>
+                                        </div>
+                                    </div>
+                                    <div class="meta-action">
+                                        <div class="meta-likes">
+                                             {{ evento.aforo }}
+                                        </div>
+
+                                        <div class="meta-view">
+                                            <lord-icon
+                                                src="https://cdn.lordicon.com/rfgxevig.json"
+                                                trigger="hover"
+                                                colors="primary:#121331,secondary:#6f42c1"
+                                                style="width:30px;height:30px"></lord-icon> 
+                                            
+                                        </div>
                                     </div>
                                 </div>
                             </div>

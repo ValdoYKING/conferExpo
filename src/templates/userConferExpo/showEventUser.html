@@ -25,7 +25,7 @@
 {% block body %}
 <body class="admin-header" data-spy="scroll" data-target="#navSection" data-offset="100">
     <!-- Barra de navegacion -->
-    {% include 'navBarUser/navAdmin.html' %}
+    {% include 'navBarUser/navUser.html' %}
     <br><br><br>
     <main>
         <div class="main-content">
@@ -37,7 +37,7 @@
                         <div class="col-md-6 align-self-center order-md-0 order-1">
                             <h1 class="">{{ eventoID.nombre }}</h1>
                             <p class="">{{ eventoID.resumen }}</p>
-                            <a href="{{ url_for('editarEvento', _id=eventoID.id) }}"><button class="btn">Editar</button></a>
+                            <a href="{{ url_for('assistEvent', _id=eventoID.id) }}"><button class="btn">Registrarme</button></a>
                             
                         </div>
                         <div class="col-md-6 order-md-0 order-0">

@@ -38,6 +38,33 @@
     margin-bottom: 0;
     margin-top: 16px; }
 
+
+    #cd-simple-2nn {
+      display: flex;
+      justify-content: space-around;
+      -ms-flex-wrap: wrap;
+      flex-wrap: wrap; }
+      #cd-simple-2nn .countdown {
+        margin-bottom: 23px; }
+      #cd-simple-2nn .clock-count-container {
+        width: 100px;
+        height: 100px;
+        -webkit-box-shadow: 1px 2px 12px 0 rgba(31, 45, 61, 0.1);
+        box-shadow: 1px 2px 12px 0 rgba(31, 45, 61, 0.1);
+        border-radius: 6px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        border: 1px solid #e0e6ed; }
+      #cd-simple-2nn .clock-val {
+        font-size: 35px;
+        color: #4361ee;
+        margin-bottom: 0; }
+      #cd-simple-2nn .clock-text {
+        color: #3b3f5c;
+        font-size: 15px;
+        margin-bottom: 0;
+        margin-top: 16px; }
 /*
     Countdown Circle
 */
