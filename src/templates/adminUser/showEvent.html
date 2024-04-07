@@ -99,16 +99,18 @@
                                     <div class="col-sm-9 col-12">
                                         <div class="tab-content" id="v-pills-tabContent">
                                           <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
-                                            <h3 class="mb-4"><lord-icon src="https://cdn.lordicon.com/abfverha.json" trigger="hover" style="width:24px;height:24px"></lord-icon>Lugar y fecha</h3>
-                                            <p class="mb-4"><h5>Fecha</h5></p>
-                                            <p class="mb-4"><h6> {{fecha_formateada }}</h6></p>
-                                            <p class="mb-4"><h6> Hora de inicio: {{ eventoID.fecha_hora_inicio }}</h6></p>
-                                            <p class="mb-4"><h6> Hora de fin: {{ eventoID.fecha_hora_fin }}</h6></p>
-                                            <p class="mb-4">
-                                                <h5>Lugar</h5>
-                                            </p>
-                                            <p class="mb-4"><h6> Direccion: {{ eventoID.lugar }}</h6></p>
-                                            <p class="mb-4"><h6> Referencias de la ubicación: {{ eventoID.referencias }}</h6></p>
+                                            <blockquote class="blockquote">
+                                                <h3 class="mb-4"><lord-icon src="https://cdn.lordicon.com/abfverha.json" trigger="hover" style="width:24px;height:24px"></lord-icon>Lugar y fecha</h3>
+                                                <p class="mb-4"><h5>Fecha</h5></p>
+                                                <p class="mb-4"><h6> {{fecha_formateada }}</h6></p>
+                                                <p class="mb-4"><h6> Hora de inicio: {{ eventoID.fecha_hora_inicio }}</h6></p>
+                                                <p class="mb-4"><h6> Hora de fin: {{ eventoID.fecha_hora_fin }}</h6></p>
+                                                <p class="mb-4">
+                                                    <h5>Lugar</h5>
+                                                </p>
+                                                <p class="mb-4"><h6> Direccion: {{ eventoID.lugar }}</h6></p>
+                                                <p class="mb-4"><h6> Referencias de la ubicación: {{ eventoID.referencias }}</h6></p>
+                                            </blockquote>
                                           </div>
                                           
                                           <!-- <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">

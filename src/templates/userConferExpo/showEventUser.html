@@ -37,8 +37,17 @@
                         <div class="col-md-6 align-self-center order-md-0 order-1">
                             <h1 class="">{{ eventoID.nombre }}</h1>
                             <p class="">{{ eventoID.resumen }}</p>
-                            <a href="{{ url_for('assistEvent', _id=eventoID.id) }}"><button class="btn">Registrarme</button></a>
+                            {% if registrado == 0 %}
+                            <form action="{{ url_for('assistEvent', evento_id=eventoID.id) }}" method="post">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn">Registrarme</button>
+                            </form>
+                            {% elif registrado == 1%}
+                            <button class="btn exitoso">Registrado</button>
+                            {% endif %}
                             
+                            
+
                         </div>
                         <div class="col-md-6 order-md-0 order-0">
                             <div class="banner-img">
@@ -91,7 +100,7 @@
                                         <div class="nav flex-column nav-pills mb-sm-0 mb-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                                           <a class="nav-link active mb-2" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">Lugar y fecha</a>
                                           <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">Sobre el evento</a>
-                                          <a class="nav-link mb-2" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">QR de asistencia</a>
+                                          <!-- <a class="nav-link mb-2" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">QR de asistencia</a> -->
                                         </div>
                                     </div>
                                 
@@ -99,7 +108,7 @@
                                         <div class="tab-content" id="v-pills-tabContent">
                                           <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
                                             <blockquote class="blockquote">
-                                                <h3 class="mb-4"><lord-icon src="https://cdn.lordicon.com/abfverha.json" trigger="hover" style="width:24px;height:24px"></lord-icon>Lugar y fecha</h3>
+                                                <h4 class="mb-4"><lord-icon src="https://cdn.lordicon.com/abfverha.json" trigger="hover" style="width:24px;height:24px"></lord-icon>Lugar y fecha</h4>
                                                 <p class="mb-4"><h5>Fecha</h5></p>
                                                 <p class="mb-4"><h6> {{fecha_formateada }}</h6></p>
                                                 <p class="mb-4"><h6> Hora de inicio: {{ eventoID.fecha_hora_inicio }}</h6></p>
@@ -112,13 +121,13 @@
                                             </blockquote>
                                           </div>
                                           <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
-                                            <h5><lord-icon src="https://cdn.lordicon.com/yxczfiyc.json" trigger="hover" style="width:24px;height:24px"></lord-icon>Sobre el evento</h5>
                                             <blockquote class="blockquote">
+                                                <h4><lord-icon src="https://cdn.lordicon.com/yxczfiyc.json" trigger="hover" style="width:24px;height:24px"></lord-icon>Sobre el evento</h4>
                                                 <pre>{{ eventoID.descripcion }}</pre>
                                             </blockquote>
                                             
                                           </div>
-                                          <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+                                          <!-- <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
                                             <blockquote class="blockquote">
                                                 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
                                                 tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
@@ -127,7 +136,7 @@
                                                 cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
                                                 proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                                             </blockquote>
-                                          </div>
+                                          </div> -->
                                         </div>
                                     </div>
                                 </div>
@@ -212,6 +221,13 @@
     <script src="{{ url_for('static', filename='assets/js/components/custom-counter.js') }}"></script>
     <!-- <script src="{{ url_for('static', filename='plugins/file-upload/file-upload-with-preview.min.js') }}"></script> -->
     <script>
+
+        document.querySelector('.btn').addEventListener('click', function(event) {
+            event.preventDefault();  // Evitar el comportamiento predeterminado del botón (enviar una solicitud GET)
+            this.closest('form').submit();  // Enviar el formulario
+        });
+
+
         var annio = parseInt("{{ year }}");
         var mes = parseInt("{{ month }}");
         var dia = parseInt("{{ day }}");
@@ -263,7 +279,7 @@
         function actualizarContador() {
             // Obtener los valores de días, horas, minutos y segundos restantes de tu backend
             var diasRestantes = parseInt("{{ dias_restantes }}");
-            var horasRestantes = parseInt("{{ horas_restantes }}");
+            var horasRestantes = parseInt("{{ fecha_hora_inicio['hora'] }}");
             var minutosRestantes = parseInt("{{ minutos_restantes }}");
             var segundosRestantes = parseInt("{{ segundos_restantes }}");
             console.log(diasRestantes, horasRestantes, minutosRestantes, segundosRestantes);

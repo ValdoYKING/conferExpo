@@ -100,71 +100,119 @@ def login():
 @app.route('/homeUser')
 @login_required
 def homeUser():
-    nombre_usuario = current_user.username
-    # Obtener todos los eventos
-    eventos, mensaje = ModelEvento.get_all_eventos(db)
+    if current_user.rol == "usuario":
+        nombre_usuario = current_user.username
+        # Obtener todos los eventos
+        eventos, mensaje = ModelEvento.get_all_eventos(db)
 
-    if eventos is None:
-        return render_template("userConferExpo/homeUser.html", error=mensaje)
+        if eventos is None:
+            return render_template("userConferExpo/homeUser.html", error=mensaje)
 
-    return render_template("userConferExpo/homeUser.html", eventos=eventos, nombre_usuario=nombre_usuario)
+        return render_template("userConferExpo/homeUser.html", eventos=eventos, nombre_usuario=nombre_usuario)
+    else:
+        abort(404)
 
 @app.route('/showEventUser/<_id>', methods=['GET', 'POST'])
 @login_required
 def showEventUser(_id):
-    if request.method == 'GET':
-        eventoID = ModelEvento.get_evento_by_id(db, _id)
-        if not eventoID:
-            flash('El evento no existe', 'error')
-            return redirect(url_for('homeUser'))
+    if current_user.rol == "usuario":
+        nombre_usuario = current_user.username
+        nombre_usuario_id = current_user.id
+        if request.method == 'GET':
+            eventoID = ModelEvento.get_evento_by_id_user(db, _id)
+            if not eventoID:
+                flash('El evento no existe', 'error')
+                return redirect(url_for('homeUser'))
 
-        # Convertimos la fecha al formato deseado
-        fecha = datetime.strptime(eventoID.fecha, "%Y-%m-%d")
-        dias_semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
-        meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
-        nombre_dia_semana = dias_semana[fecha.weekday()]
-        nombre_mes = meses[fecha.month - 1]
-        fecha_formateada = f"{nombre_dia_semana}, {fecha.day} de {nombre_mes} de {fecha.year}"
-        # Obtenemos el número de usuarios registrados
-        num_usuarios_registrados = len(eventoID.usuarios_registrados)
-        # Convertimos el aforo a un entero
-        aforo = int(eventoID.aforo)
-         # Calculamos la disponibilidad
-        disponibilidad = aforo - len(eventoID.usuarios_registrados)
-        # Convertir la fecha y hora del evento a un objeto datetime
-        fecha_evento = eventoID.fecha + ' ' + eventoID.fecha_hora_inicio
-        fecha_evento_datetime = datetime.strptime(fecha_evento, '%Y-%m-%d %H:%M')
+            # Convertimos la fecha al formato deseado
+            fecha = datetime.strptime(eventoID.fecha, "%Y-%m-%d")
+            dias_semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+            meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
+            nombre_dia_semana = dias_semana[fecha.weekday()]
+            nombre_mes = meses[fecha.month - 1]
+            fecha_formateada = f"{nombre_dia_semana}, {fecha.day} de {nombre_mes} de {fecha.year}"
+            # Obtenemos el número de usuarios registrados
+            num_usuarios_registrados = len(eventoID.usuarios_registrados)
+            # Convertimos el aforo a un entero
+            aforo = int(eventoID.aforo)
+             # Calculamos la disponibilidad
+            disponibilidad = aforo - len(eventoID.usuarios_registrados)
+            # Convertir la fecha y hora del evento a un objeto datetime
+            fecha_evento = eventoID.fecha + ' ' + eventoID.fecha_hora_inicio
+            fecha_evento_datetime = datetime.strptime(fecha_evento, '%Y-%m-%d %H:%M')
 
-        # Obtener la fecha y hora actual
-        fecha_actual = datetime.now()
+            # Obtener la fecha y hora actual
+            fecha_actual = datetime.now()
 
-        # Calcular el tiempo restante
-        tiempo_restante = fecha_evento_datetime - fecha_actual
-        
-        # Dividir el tiempo restante en días, horas, minutos y segundos
-        dias_restantes = tiempo_restante.days
-        horas_restantes, segundos_restantes = divmod(tiempo_restante.seconds, 3600)
-        minutos_restantes, segundos_restantes = divmod(segundos_restantes, 60)
-        hora_inicio, minutos_inicio = eventoID.fecha_hora_inicio.split(':')
-        fecha_hora_inicio = {'hora': int(hora_inicio), 'minutos': int(minutos_inicio)}
-        # Obtener el año, mes y día de la fecha
-        year = fecha.year
-        month = fecha.month
-        day = fecha.day
-        
-        return render_template('userConferExpo/showEventUser.html', eventoID=eventoID, fecha_formateada=fecha_formateada, num_usuarios_registrados=num_usuarios_registrados, disponibilidad=disponibilidad,dias_restantes=dias_restantes, horas_restantes=horas_restantes, minutos_restantes=minutos_restantes, segundos_restantes=segundos_restantes, fecha_hora_inicio=fecha_hora_inicio, year=year, month=month, day=day)
+            # Calcular el tiempo restante
+            tiempo_restante = fecha_evento_datetime - fecha_actual
+
+            # Dividir el tiempo restante en días, horas, minutos y segundos
+            dias_restantes = tiempo_restante.days
+            horas_restantes, segundos_restantes = divmod(tiempo_restante.seconds, 3600)
+            minutos_restantes, segundos_restantes = divmod(segundos_restantes, 60)
+            hora_inicio, minutos_inicio = eventoID.fecha_hora_inicio.split(':')
+            fecha_hora_inicio = {'hora': int(hora_inicio), 'minutos': int(minutos_inicio)}
+            # Obtener el año, mes y día de la fecha
+            year = fecha.year
+            month = fecha.month
+            day = fecha.day
+            # Verificar si el usuario ya está registrado para este evento
+            if nombre_usuario_id in eventoID.usuarios_registrados:
+                registrado = 1
+            else:
+                registrado = 0
+
+            return render_template('userConferExpo/showEventUser.html', eventoID=eventoID, fecha_formateada=fecha_formateada, num_usuarios_registrados=num_usuarios_registrados, disponibilidad=disponibilidad,dias_restantes=dias_restantes, horas_restantes=horas_restantes, minutos_restantes=minutos_restantes, segundos_restantes=segundos_restantes, fecha_hora_inicio=fecha_hora_inicio, year=year, month=month, day=day, nombre_usuario=nombre_usuario, registrado=registrado)
+        else:
+            abort(404)
     
-@app.route('/assistEvent')
+@app.route('/assistEvent/<evento_id>', methods=['POST'])
 @login_required
-def assistEvent():
-    nombre_usuario = current_user.username
-    # Obtener todos los eventos
-    eventos, mensaje = ModelEvento.get_all_eventos(db)
+def assistEvent(evento_id):
+    # Obtener el ID del usuario loggeado
+    user_id = current_user.id
+    
+    # Verificar si se recibió una solicitud POST
+    if request.method == 'POST':
+        # Obtener el evento por su ID
+        evento = ModelEvento.get_evento_by_id(db, evento_id)
 
-    if eventos is None:
-        return render_template("userConferExpo/homeUser.html", error=mensaje)
+        # Verificar si se encontró el evento
+        if evento:
+            # Verificar si el usuario ya está registrado para este evento
+            if user_id in evento.usuarios_registrados:
+                flash('Ya estás registrado para este evento.', 'warning')
+            else:
+                # Registrar al usuario para el evento
+                evento.registrar_usuario(user_id)
+                # Actualizar el evento en la base de datos
+                success, message = ModelEvento.update_evento(db, evento_id, evento)
+                if success:
+                    flash('Te has registrado correctamente para el evento.', 'success')
+                else:
+                    flash(f'Error al registrar para el evento: {message}', 'error')
+        else:
+            flash('El evento no existe.', 'error')
 
-    return render_template("userConferExpo/homeUser.html", eventos=eventos, nombre_usuario=nombre_usuario)
+    # Redirigir de vuelta a la página de inicio o a donde desees
+    return redirect(url_for('homeUser'))
+
+@app.route('/assistUserList')
+@login_required
+def assistUserList():
+    if current_user.rol == "usuario":
+        nombre_usuario = current_user.username
+        user_id = current_user.id
+        # Obtener todos los eventos
+        eventos, mensaje = ModelEvento.get_all_eventos_by_user(db, user_id)
+
+        if eventos is None:
+            return render_template("userConferExpo/assistUserList.html", error=mensaje)
+
+        return render_template("userConferExpo/assistUserList.html", eventos=eventos, nombre_usuario=nombre_usuario)
+    else:
+        abort(404)
 
 
 
@@ -182,14 +230,19 @@ def home():
 @app.route("/homeAdmin")
 @login_required
 def homeAdmin():
-    nombre_usuario = current_user.username
-    # Obtener todos los eventos
-    eventos, mensaje = ModelEvento.get_all_eventos(db)
+    # Verificar el rol del usuario
+    if current_user.rol == "administrador":
+        nombre_usuario = current_user.username
+        # Obtener todos los eventos
+        eventos, mensaje = ModelEvento.get_all_eventos(db)
 
-    if eventos is None:
-        return render_template("adminUser/homeAdmin.html", error=mensaje)
+        if eventos is None:
+            return render_template("adminUser/homeAdmin.html", error=mensaje)
 
-    return render_template("adminUser/homeAdmin.html", eventos=eventos, nombre_usuario=nombre_usuario)
+        return render_template("adminUser/homeAdmin.html", eventos=eventos, nombre_usuario=nombre_usuario)
+    else:
+        # Si el usuario no es un administrador, redirigir a una página de error 404
+        abort(404)
 
 
 
@@ -200,74 +253,83 @@ def allowed_file(filename):
 @app.route('/newEvent')
 @login_required
 def newEvent():
-    return render_template('adminUser/newEvent.html')
+    # Verificar el rol del usuario
+    if current_user.rol == "administrador":
+        nombre_usuario = current_user.username
+        return render_template('adminUser/newEvent.html', nombre_usuario=nombre_usuario)
+    else:
+        # Si el usuario no es un administrador, redirigir a una página de error 404
+        abort(404)
 
 
 @app.route('/registerEvent', methods=['GET', 'POST'])
 @login_required
 def registerEvent():
-    if request.method == 'POST':
-        # Obtener los datos del formulario de registro
-        nombre = request.form['eventName']
-        resumen = request.form['resumeEvent']
-        fecha = request.form['dateEvent']
-        fecha_hora_inicio = request.form['starHour']
-        fecha_hora_fin = request.form['finishHour']
-        lugar = request.form['addressEvent']
-        referencias = request.form['referencesAddress']
-        aforo = request.form['aforo']
-        duracion_estimada = request.form['duracion_estimada']
-        descripcion = request.form['descriptionEvent']
-        
-        # Verificar si se ha proporcionado una imagen
-        if 'imagen' not in request.files:
-            flash('No se ha proporcionado ninguna imagen')
-            return redirect(request.url)
-        
-        imagen = request.files['imagen']
+    if current_user.rol == "administrador":
+        if request.method == 'POST':
+            # Obtener los datos del formulario de registro
+            nombre = request.form['eventName']
+            resumen = request.form['resumeEvent']
+            fecha = request.form['dateEvent']
+            fecha_hora_inicio = request.form['starHour']
+            fecha_hora_fin = request.form['finishHour']
+            lugar = request.form['addressEvent']
+            referencias = request.form['referencesAddress']
+            aforo = request.form['aforo']
+            duracion_estimada = request.form['duracion_estimada']
+            descripcion = request.form['descriptionEvent']
 
-        
-        # Verificar si la imagen tiene un nombre de archivo válido
-        if imagen.filename == '':
-            flash('No se ha seleccionado ningún archivo')
-            return redirect(request.url)
-        
-        if imagen and allowed_file(imagen.filename):
-            # Se asegura que el nombre del archivo sea seguro
-            filename = secure_filename(imagen.filename)
-            # Se guarda la imagen en la carpeta deseada
-            imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            # Verificar si se ha proporcionado una imagen
+            if 'imagen' not in request.files:
+                flash('No se ha proporcionado ninguna imagen')
+                return redirect(request.url)
+
+            imagen = request.files['imagen']
+
+
+            # Verificar si la imagen tiene un nombre de archivo válido
+            if imagen.filename == '':
+                flash('No se ha seleccionado ningún archivo')
+                return redirect(request.url)
+
+            if imagen and allowed_file(imagen.filename):
+                # Se asegura que el nombre del archivo sea seguro
+                filename = secure_filename(imagen.filename)
+                # Se guarda la imagen en la carpeta deseada
+                imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            else:
+                flash('El formato de archivo de imagen no es válido')
+                return redirect(request.url)
+
+            # Crear un nuevo evento
+            new_event = Evento(
+                nombre=nombre,
+                resumen=resumen,
+                fecha = fecha,
+                fecha_hora_inicio=fecha_hora_inicio,
+                fecha_hora_fin=fecha_hora_fin,
+                lugar=lugar,
+                referencias=referencias,
+                aforo=aforo,
+                duracion_estimada=duracion_estimada,
+                descripcion=descripcion,
+                imagen=filename
+                #imagen=os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            )
+
+            # Guardar el nuevo evento en la base de datos
+            success, message = ModelEvento.crear_evento(db, new_event)
+
+            if success:
+                flash(message)
+                return redirect(url_for('homeAdmin'))
+            else:
+                flash(message, 'error')
+                return redirect(url_for('registerEvent'))
         else:
-            flash('El formato de archivo de imagen no es válido')
-            return redirect(request.url)
-        
-        # Crear un nuevo evento
-        new_event = Evento(
-            nombre=nombre,
-            resumen=resumen,
-            fecha = fecha,
-            fecha_hora_inicio=fecha_hora_inicio,
-            fecha_hora_fin=fecha_hora_fin,
-            lugar=lugar,
-            referencias=referencias,
-            aforo=aforo,
-            duracion_estimada=duracion_estimada,
-            descripcion=descripcion,
-            imagen=filename
-            #imagen=os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        )
-
-        # Guardar el nuevo evento en la base de datos
-        success, message = ModelEvento.crear_evento(db, new_event)
-
-        if success:
-            flash(message)
-            return redirect(url_for('homeAdmin'))
-        else:
-            flash(message, 'error')
-            return redirect(url_for('registerEvent'))
+            return render_template('adminUser/newEvent.html')
     else:
-        return render_template('adminUser/newEvent.html')
+        abort(404)
     
 @app.route('/mostrar_imagen/<filename>')
 def mostrar_imagen(filename):
@@ -287,111 +349,119 @@ def show_image(filename):
 @app.route('/showEvent/<_id>', methods=['GET', 'POST'])
 @login_required
 def showEvent(_id):
-    if request.method == 'GET':
-        eventoID = ModelEvento.get_evento_by_id(db, _id)
-        if not eventoID:
-            flash('El evento no existe', 'error')
-            return redirect(url_for('homeAdmin'))
+    if current_user.rol == "administrador":
+        nombre_usuario = current_user.username
+        if request.method == 'GET':
+            eventoID = ModelEvento.get_evento_by_id_user(db, _id)
+            if not eventoID:
+                flash('El evento no existe', 'error')
+                return redirect(url_for('homeAdmin'))
 
-        # Convertimos la fecha al formato deseado
-        fecha = datetime.strptime(eventoID.fecha, "%Y-%m-%d")
-        dias_semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
-        meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
-        nombre_dia_semana = dias_semana[fecha.weekday()]
-        nombre_mes = meses[fecha.month - 1]
-        fecha_formateada = f"{nombre_dia_semana}, {fecha.day} de {nombre_mes} de {fecha.year}"
-        # Obtenemos el número de usuarios registrados
-        num_usuarios_registrados = len(eventoID.usuarios_registrados)
-        # Convertimos el aforo a un entero
-        aforo = int(eventoID.aforo)
-         # Calculamos la disponibilidad
-        disponibilidad = aforo - len(eventoID.usuarios_registrados)
-        # Convertir la fecha y hora del evento a un objeto datetime
-        fecha_evento = eventoID.fecha + ' ' + eventoID.fecha_hora_inicio
-        fecha_evento_datetime = datetime.strptime(fecha_evento, '%Y-%m-%d %H:%M')
+            # Convertimos la fecha al formato deseado
+            fecha = datetime.strptime(eventoID.fecha, "%Y-%m-%d")
+            dias_semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+            meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
+            nombre_dia_semana = dias_semana[fecha.weekday()]
+            nombre_mes = meses[fecha.month - 1]
+            fecha_formateada = f"{nombre_dia_semana}, {fecha.day} de {nombre_mes} de {fecha.year}"
+            # Obtenemos el número de usuarios registrados
+            num_usuarios_registrados = len(eventoID.usuarios_registrados)
+            # Convertimos el aforo a un entero
+            aforo = int(eventoID.aforo)
+             # Calculamos la disponibilidad
+            disponibilidad = aforo - len(eventoID.usuarios_registrados)
+            # Convertir la fecha y hora del evento a un objeto datetime
+            fecha_evento = eventoID.fecha + ' ' + eventoID.fecha_hora_inicio
+            fecha_evento_datetime = datetime.strptime(fecha_evento, '%Y-%m-%d %H:%M')
 
-        # Obtener la fecha y hora actual
-        fecha_actual = datetime.now()
+            # Obtener la fecha y hora actual
+            fecha_actual = datetime.now()
 
-        # Calcular el tiempo restante
-        tiempo_restante = fecha_evento_datetime - fecha_actual
-        
-        # Dividir el tiempo restante en días, horas, minutos y segundos
-        dias_restantes = tiempo_restante.days
-        horas_restantes, segundos_restantes = divmod(tiempo_restante.seconds, 3600)
-        minutos_restantes, segundos_restantes = divmod(segundos_restantes, 60)
-        hora_inicio, minutos_inicio = eventoID.fecha_hora_inicio.split(':')
-        fecha_hora_inicio = {'hora': int(hora_inicio), 'minutos': int(minutos_inicio)}
-        # Obtener el año, mes y día de la fecha
-        year = fecha.year
-        month = fecha.month
-        day = fecha.day
-        
-        return render_template('adminUser/showEvent.html', eventoID=eventoID, fecha_formateada=fecha_formateada, num_usuarios_registrados=num_usuarios_registrados, disponibilidad=disponibilidad,dias_restantes=dias_restantes, horas_restantes=horas_restantes, minutos_restantes=minutos_restantes, segundos_restantes=segundos_restantes, fecha_hora_inicio=fecha_hora_inicio, year=year, month=month, day=day)
+            # Calcular el tiempo restante
+            tiempo_restante = fecha_evento_datetime - fecha_actual
+
+            # Dividir el tiempo restante en días, horas, minutos y segundos
+            dias_restantes = tiempo_restante.days
+            horas_restantes, segundos_restantes = divmod(tiempo_restante.seconds, 3600)
+            minutos_restantes, segundos_restantes = divmod(segundos_restantes, 60)
+            hora_inicio, minutos_inicio = eventoID.fecha_hora_inicio.split(':')
+            fecha_hora_inicio = {'hora': int(hora_inicio), 'minutos': int(minutos_inicio)}
+            # Obtener el año, mes y día de la fecha
+            year = fecha.year
+            month = fecha.month
+            day = fecha.day
+
+            return render_template('adminUser/showEvent.html', eventoID=eventoID, fecha_formateada=fecha_formateada, num_usuarios_registrados=num_usuarios_registrados, disponibilidad=disponibilidad,dias_restantes=dias_restantes, horas_restantes=horas_restantes, minutos_restantes=minutos_restantes, segundos_restantes=segundos_restantes, fecha_hora_inicio=fecha_hora_inicio, year=year, month=month, day=day, nombre_usuario=nombre_usuario)
+        else:
+            abort(404)
    
 @app.route('/editarEvento/<_id>', methods=['GET', 'POST'])
 @login_required
 def editarEvento(_id):
-    if request.method == 'GET':
-        resultData = ModelEvento.get_evento_by_id(db, _id)
-        print(resultData)
-        if not resultData:
-            flash('El evento no existe', 'error')
-            return redirect(url_for('homeAdmin'))
-        return render_template('adminUser/editEvent.html', eventoID=resultData)
+    if current_user.rol == "administrador":
+        nombre_usuario = current_user.username
+        if request.method == 'GET':
+            resultData = ModelEvento.get_evento_by_id(db, _id)
+            print(resultData)
+            if not resultData:
+                flash('El evento no existe', 'error')
+                return redirect(url_for('homeAdmin'))
+            return render_template('adminUser/editEvent.html', eventoID=resultData, nombre_usuario=nombre_usuario)
 
-    if request.method == 'POST':
-       # Obtener los datos del formulario
-       nombre = request.form['eventName']
-       resumen = request.form['resumeEvent']
-       fecha = request.form['dateEvent']
-       fecha_hora_inicio = request.form['starHour']
-       fecha_hora_fin = request.form['finishHour']
-       lugar = request.form['addressEvent']
-       referencias = request.form['referencesAddress']
-       aforo = request.form['aforo']
-       duracion_estimada = request.form['duracion_estimada']
-       descripcion = request.form['descriptionEvent']
-       # ... obtener otros datos del formulario ...
-       # Obtener el evento de la base de datos
-       evento = ModelEvento.get_evento_by_id(db, _id)
-       if not evento:
-           flash('El evento no existe', 'error')
-           return redirect(url_for('homeAdmin'))
-       # Validar datos e imagen (similar al código de 'registerEvent')
-       imagen = request.files['imagen']
-       # Verificar si se proporcionó una nueva imagen
-       if imagen and imagen.filename != '':
-           if allowed_file(imagen.filename):
-               # Se asegura que el nombre del archivo sea seguro
-               filename = secure_filename(imagen.filename)
-               # Se guarda la nueva imagen en la carpeta deseada
-               imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-               # Actualizar la imagen en el evento solo si se proporciona una nueva imagen
-               evento.imagen = filename
+        if request.method == 'POST':
+           # Obtener los datos del formulario
+           nombre = request.form['eventName']
+           resumen = request.form['resumeEvent']
+           fecha = request.form['dateEvent']
+           fecha_hora_inicio = request.form['starHour']
+           fecha_hora_fin = request.form['finishHour']
+           lugar = request.form['addressEvent']
+           referencias = request.form['referencesAddress']
+           aforo = request.form['aforo']
+           duracion_estimada = request.form['duracion_estimada']
+           descripcion = request.form['descriptionEvent']
+           # ... obtener otros datos del formulario ...
+           # Obtener el evento de la base de datos
+           evento = ModelEvento.get_evento_by_id(db, _id)
+           if not evento:
+               flash('El evento no existe', 'error')
+               return redirect(url_for('homeAdmin'))
+           # Validar datos e imagen (similar al código de 'registerEvent')
+           imagen = request.files['imagen']
+           # Verificar si se proporcionó una nueva imagen
+           if imagen and imagen.filename != '':
+               if allowed_file(imagen.filename):
+                   # Se asegura que el nombre del archivo sea seguro
+                   filename = secure_filename(imagen.filename)
+                   # Se guarda la nueva imagen en la carpeta deseada
+                   imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                   # Actualizar la imagen en el evento solo si se proporciona una nueva imagen
+                   evento.imagen = filename
+               else:
+                   flash('El formato de archivo de imagen no es válido')
+                   return redirect(request.url)
+           # Actualizar los campos del evento
+           evento.nombre = nombre
+           evento.resumen = resumen
+           evento.fecha = fecha
+           evento.fecha_hora_inicio = fecha_hora_inicio
+           evento.fecha_hora_fin = fecha_hora_fin
+           evento.lugar = lugar
+           evento.referencias = referencias
+           evento.aforo = aforo
+           evento.duracion_estimada = duracion_estimada
+           evento.descripcion = descripcion
+           # Actualizar el evento en la base de datos
+           success, message = ModelEvento.update_evento(db, _id, evento)
+
+           if success:
+               flash(message)
+               return redirect(url_for('homeAdmin'))
            else:
-               flash('El formato de archivo de imagen no es válido')
-               return redirect(request.url)
-       # Actualizar los campos del evento
-       evento.nombre = nombre
-       evento.resumen = resumen
-       evento.fecha = fecha
-       evento.fecha_hora_inicio = fecha_hora_inicio
-       evento.fecha_hora_fin = fecha_hora_fin
-       evento.lugar = lugar
-       evento.referencias = referencias
-       evento.aforo = aforo
-       evento.duracion_estimada = duracion_estimada
-       evento.descripcion = descripcion
-       # Actualizar el evento en la base de datos
-       success, message = ModelEvento.update_evento(db, _id, evento)
-
-       if success:
-           flash(message)
-           return redirect(url_for('homeAdmin'))
-       else:
-           flash(message, 'error')
-           return redirect(url_for('editarEvento', _id=_id))
+               flash(message, 'error')
+               return redirect(url_for('editarEvento', _id=_id))
+    else:
+        abort(404)
 
 
 
@@ -408,6 +478,8 @@ def test():
 def status_401(error):
     return redirect(url_for('login'))
 
+def status_403(error):
+    return render_template('error/403.html'),403
 
 def status_404(error):
     return render_template('error/404.html'),404

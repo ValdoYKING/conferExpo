@@ -49,22 +49,13 @@
                                 <p class="card-text">{{ evento.resumen }}</p>            
                                 <div class="meta-info">
                                     <div class="meta-user">
-                                        <div class="user-name">
+                                        <div class="user-name text-center">
                                             <a href="{{ url_for('showEventUser', _id=evento._id) }}" class="btn btn-secondary btn-rounded mb-1">Ver detalles</a>
                                         </div>
                                     </div>
-                                    <div class="meta-action">
-                                        <div class="meta-likes">
-                                             {{ evento.aforo }}
-                                        </div>
-
-                                        <div class="meta-view">
-                                            <lord-icon
-                                                src="https://cdn.lordicon.com/rfgxevig.json"
-                                                trigger="hover"
-                                                colors="primary:#121331,secondary:#6f42c1"
-                                                style="width:30px;height:30px"></lord-icon> 
-                                            
+                                    <div class="meta-user text-center">
+                                        <div class="user-name">
+                                            <a href="{{ url_for('showEventUser', _id=evento._id) }}" class="btn btn-secondary btn-rounded mb-1">QR de asistencia</a>
                                         </div>
                                     </div>
                                 </div>
