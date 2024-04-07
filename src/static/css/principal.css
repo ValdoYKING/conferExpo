@@ -23,3 +23,8 @@
     margin: 0; /* Elimina cualquier margen que pueda tener el elemento <pre> */
     white-space: pre-wrap; /* Conserva los saltos de línea y los espacios en blanco */
 }
+
+.qr-code-img-details {
+    max-width: 100%; /* Para evitar que la imagen se expanda más allá del ancho del contenedor */
+    height: auto; /* Para mantener la relación de aspecto de la imagen */
+}

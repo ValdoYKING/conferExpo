@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='plugins/sweetalerts/sweetalert.css') }}" type="text/css">
 <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/components/custom-sweetalert.css') }}" type="text/css">
 <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/components/cards/card.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/components/custom-modal.css') }}" type="text/css">
 {% endblock %}
 
 {% block body %}
@@ -37,7 +38,7 @@
                 <div class="widget-content widget-content-area layout-top-spacing">
                     <div class="card-container-card"> <!-- Contenedor para las tarjetas -->
                         {% for evento in eventos %}
-                        <div class="card component-card_9">
+                        <div class="card component-card_9" data-event-id="{{ evento._id }}">
                             {% if evento.imagen %}
                             <img class="card-img-top" src="{{ url_for('show_image', filename=evento.imagen)}}" alt="Imagen del evento {{ evento.nombre }}">
                             {% else %}
@@ -55,7 +56,9 @@
                                     </div>
                                     <div class="meta-user text-center">
                                         <div class="user-name">
-                                            <a href="{{ url_for('showEventUser', _id=evento._id) }}" class="btn btn-secondary btn-rounded mb-1">QR de asistencia</a>
+                                            <button type="button" class="btn btn-secondary qr-event btn-rounded mb-1" data-toggle="modal" data-target="#modalQR">
+                                                QR de asistencia
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -64,8 +67,32 @@
                         {% endfor %}
                     </div>
                 </div>
-            </div>                   
+            </div>     
         </div>
+        
+        <div class="modal fade" id="modalQR" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Código QR de asistencia</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center">
+                             <!-- Aquí se muestra el código QR -->
+                            <img class="qr-code-img-details img-fluid" id="qr-code-img" src="" alt="Código QR de asistencia">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> Hecho</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </main>   
     {% include '/footer.html' %}
 </body>
@@ -73,6 +100,21 @@
 
 
 {% block scripts %}  
+    <script>
+        $(document).ready(function() {
+            // Al hacer clic en el botón "QR de asistencia"
+            $('.qr-event').click(function() {
+                // Obtén el ID del evento correspondiente
+                var eventId = $(this).closest('.card').data('event-id');
+                // Obtiene el ID del usuario del contexto de plantilla
+                var userId = '{{ current_user.id }}';
+                // Construye la URL de la ruta para generar el QR
+                var qrUrl = '/generate_qr/' + userId + '/' + eventId;
+                // Actualiza el atributo "src" de la etiqueta <img> con la URL del QR
+                $('#qr-code-img').attr('src', qrUrl);
+            });
+        });
+    </script>
     <script src="{{ url_for('static', filename='plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
     <script src="{{ url_for('static', filename='plugins/blockui/jquery.blockUI.min.js') }}"></script>
     <script src="{{ url_for('static', filename='assets/js/app.js') }}"></script>
@@ -84,5 +126,4 @@
     <script src="{{ url_for('static', filename='plugins/sweetalerts/sweetalert2.min.js') }}"></script>
     <script src="{{ url_for('static', filename='plugins/sweetalerts/custom-sweetalert.js') }}"></script>
 {% endblock %}
-
 

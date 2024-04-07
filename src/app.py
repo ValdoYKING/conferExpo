@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+import io
+from flask import Flask, make_response, render_template, request, redirect, url_for, flash
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask import send_from_directory, abort
@@ -12,6 +13,7 @@ from wtforms import StringField, SubmitField
 from wtforms import StringField, TextAreaField, DateTimeField
 from wtforms.validators import DataRequired, Optional
 from datetime import datetime
+import qrcode
 
 
 from config import config
@@ -214,7 +216,35 @@ def assistUserList():
     else:
         abort(404)
 
+# Ruta para generar el código QR
+@app.route('/generate_qr/<user_id>/<event_id>')
+def generate_qr(user_id, event_id):
+    # Crear la cadena de datos que deseas codificar en el código QR
+    qr_data = f"Usuario: {user_id}, Evento: {event_id}"
 
+    # Crear el objeto QRCode y generar el código QR
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(qr_data)
+    qr.make(fit=True)
+
+    # Crear una imagen PIL del código QR
+    qr_image = qr.make_image(fill_color="black", back_color="white")
+
+    # Convertir la imagen del código QR en bytes
+    img_bytes = io.BytesIO()
+    qr_image.save(img_bytes, format='PNG')
+    img_bytes.seek(0)
+
+    # Crear una respuesta con la imagen del código QR
+    response = make_response(img_bytes.getvalue())
+    response.headers['Content-Type'] = 'image/png'
+
+    return response
 
 @app.route('/logout')
 def logout():
