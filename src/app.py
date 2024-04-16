@@ -1,7 +1,7 @@
 import io
 import cv2
 from flask import Flask, jsonify, make_response, render_template, request, redirect, url_for, flash
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask import send_from_directory, abort
 import os
@@ -97,7 +97,7 @@ def login():
             flash("Usuario o contraseña no válidos")
             return render_template('auth/login.html')
     else:
-        return render_template('auth/login.html')
+        return render_template('auth/login.html',csrf_token=generate_csrf())
 
 @app.route('/homeUser')
 @login_required
