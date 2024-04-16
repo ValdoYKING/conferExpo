@@ -1,5 +1,3 @@
-import sys
-print(sys.path)
 import io
 import cv2
 from flask import Flask, jsonify, make_response, render_template, request, redirect, url_for, flash
@@ -17,8 +15,6 @@ from wtforms import StringField, SubmitField, StringField, TextAreaField, DateTi
 from wtforms.validators import DataRequired, Optional
 from datetime import datetime
 import qrcode
-
-
 
 from config import config
 
