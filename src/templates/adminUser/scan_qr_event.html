@@ -17,7 +17,7 @@
 <body>
     <!-- Barra de navegacion -->
     {% include 'navBarUser/navAdmin.html' %}
-    <br><br><br>
+    <br><br><br><br><br><br>
     <main>
         <div id="content" class="content">
             <div>
@@ -33,19 +33,14 @@
                 {% endif %}
                 {% endwith %}
             </div>
-            <h1>Escaneo de Código QR</h1>
+            <h1>Código QR para asistencia</h1>
 
             <div id="qrSuccessMessage" class="alert alert-success" style="display: none;" role="alert">
                 El código QR fue escaneado con éxito.
             </div>
             <div id="qrErrorMessage" class="alert alert-danger" style="display: none;" role="alert">
-                <!-- Aquí se mostrará el mensaje de error -->
             </div>
-            <!-- Contenedor para la vista previa de la cámara -->
-             <!-- Contenedor para la vista previa de la cámara -->
-             <div id="video-container"></div>
-            <!-- Contenedor para el mensaje emergente -->
-            
+             <div class="text-center" id="video-container"></div>           
         </div>
       
     </main>
@@ -58,6 +53,7 @@
                     videoElement.srcObject = stream;
                     document.getElementById('video-container').appendChild(videoElement);
                     videoElement.play();
+                    const maxVideoContainerWidth = 400; // Establece el ancho máximo del contenedor del video
 
                     setInterval(() => {
                         const canvas = document.createElement('canvas');
@@ -70,16 +66,14 @@
 
                         const code = jsQR(imageData.data, imageData.width, imageData.height);
                         if (code) {
-                            // Obtener el token CSRF del meta tag
                             const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-                            // Enviar el código QR al servidor con el token CSRF incluido en el encabezado
                             fetch('/process_qr_code', {
                                 method: 'POST',
                                 body: JSON.stringify({ qr_data: code.data }),
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    'X-CSRFToken': csrfToken  // Agregar el token CSRF al encabezado
+                                    'X-CSRFToken': csrfToken
                                 }
                             })
                             .then(response => {
@@ -96,10 +90,8 @@
                                     });
                                     console.log('QR code processed successfully');
                                 } else {
-                                    // Mostrar el mensaje de error
                                     response.json().then(data => {
                                         if (data.error_message) {
-                                            // Mostrar el mensaje de error
                                             document.getElementById('qrErrorMessage').innerText = data.error_message;
                                             document.getElementById('qrErrorMessage').style.display = 'block';
                                             

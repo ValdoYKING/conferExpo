@@ -28,3 +28,24 @@
     max-width: 100%; /* Para evitar que la imagen se expanda más allá del ancho del contenedor */
     height: auto; /* Para mantener la relación de aspecto de la imagen */
 }
+
+/* Estilo predeterminado para pantallas grandes, como laptops */
+video {
+    width: 65%;
+    height: auto;
+    border-radius: 18px;
+}
+
+/* Consulta de medios para pantallas de tamaño medio, como tabletas */
+@media only screen and (max-width: 1024px) {
+    video {
+        width: 95%;
+    }
+}
+
+/* Consulta de medios para pantallas pequeñas, como teléfonos móviles */
+@media only screen and (max-width: 600px) {
+    video {
+        width: 95%;
+    }
+}
