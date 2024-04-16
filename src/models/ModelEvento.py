@@ -54,26 +54,16 @@ class ModelEvento:
         except Exception as ex:
             raise Exception(ex)
 
-    
+    #update_evento
     @classmethod
     def update_evento(cls, db, id, evento):
         try:
-            # Obtener el evento existente de la base de datos
-            evento_existente = db.eventos.find_one({"_id": ObjectId(id)})
-            if not evento_existente:
-                raise Exception("El evento no existe")
-
-            # Agregar el usuario al arreglo de usuarios registrados
-            if evento.usuarios_registrados:
-                if 'usuarios_registrados' not in evento_existente:
-                    evento_existente['usuarios_registrados'] = []
-                evento_existente['usuarios_registrados'].extend(evento.usuarios_registrados)
-
             # Actualizar el evento en la base de datos
-            db.eventos.update_one({"_id": ObjectId(id)}, {"$set": evento_existente})
+            db.eventos.update_one({"_id": ObjectId(id)}, {"$set": evento.__dict__})
             return True, "¡Evento actualizado exitosamente!"
         except Exception as ex:
             return False, str(ex)
+    
 
     
     @classmethod
@@ -109,4 +99,24 @@ class ModelEvento:
             return None
         except Exception as ex:
             raise Exception(ex)
+    
+    @classmethod
+    def update_evento_assist(cls, db, id, evento):
+        try:
+            # Obtener el evento existente de la base de datos
+            evento_existente = db.eventos.find_one({"_id": ObjectId(id)})
+            if not evento_existente:
+                raise Exception("El evento no existe")
+
+            # Agregar el usuario al arreglo de usuarios registrados
+            if evento.usuarios_registrados:
+                if 'usuarios_registrados' not in evento_existente:
+                    evento_existente['usuarios_registrados'] = []
+                evento_existente['usuarios_registrados'].extend(evento.usuarios_registrados)
+
+            # Actualizar el evento en la base de datos
+            db.eventos.update_one({"_id": ObjectId(id)}, {"$set": evento_existente})
+            return True, "¡Evento actualizado exitosamente!"
+        except Exception as ex:
+            return False, str(ex)
     

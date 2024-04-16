@@ -1,19 +1,21 @@
 import io
-from flask import Flask, make_response, render_template, request, redirect, url_for, flash
+import cv2
+from flask import Flask, jsonify, make_response, render_template, request, redirect, url_for, flash
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask import send_from_directory, abort
 import os
+import numpy as np
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from werkzeug.utils import secure_filename
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, SubmitField
-from wtforms import StringField, TextAreaField, DateTimeField
+from wtforms import StringField, SubmitField, StringField, TextAreaField, DateTimeField
 from wtforms.validators import DataRequired, Optional
 from datetime import datetime
 import qrcode
+from pyzbar.pyzbar import decode
 
 
 from config import config
@@ -189,7 +191,7 @@ def assistEvent(evento_id):
                 # Registrar al usuario para el evento
                 evento.registrar_usuario(user_id)
                 # Actualizar el evento en la base de datos
-                success, message = ModelEvento.update_evento(db, evento_id, evento)
+                success, message = ModelEvento.update_evento_assist(db, evento_id, evento)
                 if success:
                     flash('Te has registrado correctamente para el evento.', 'success')
                 else:
@@ -493,6 +495,76 @@ def editarEvento(_id):
     else:
         abort(404)
 
+@app.route("/scan_qr_event")
+@login_required
+def scan_qr_event():
+    # Verificar el rol del usuario
+    if current_user.rol == "administrador":
+        nombre_usuario = current_user.username
+        # Obtener todos los eventos
+        eventos, mensaje = ModelEvento.get_all_eventos(db)
+
+        if eventos is None:
+            return render_template("adminUser/scan_qr_event.html", error=mensaje)
+
+        return render_template("adminUser/scan_qr_event.html", eventos=eventos, nombre_usuario=nombre_usuario)
+    else:
+        # Si el usuario no es un administrador, redirigir a una página de error 404
+        abort(404)
+        
+@app.route("/process_qr_code", methods=["POST"])
+def process_qr_code():
+    # Obtener los datos del código QR escaneado desde la solicitud POST
+    qr_data = request.json.get("qr_data")
+
+    # Analizar la cadena del código QR para obtener los datos del usuario y del evento
+    user_id = None
+    event_id = None
+    if qr_data:
+        # Dividir la cadena del código QR en partes usando la coma como separador
+        parts = qr_data.split(", ")
+
+        # Iterar sobre las partes y extraer los datos del usuario y del evento
+        for part in parts:
+            if part.startswith("Usuario:"):
+                user_id = part.split(":")[1].strip()
+            elif part.startswith("Evento:"):
+                event_id = part.split(":")[1].strip()
+
+    # Verificar si se obtuvieron los datos del usuario y del evento
+    if user_id is None or event_id is None:
+        # Si falta alguno de los datos, devolver un mensaje de error
+        response_data = {
+            "error_message": "No se pudieron obtener los datos del código QR",
+            "success_message":"No se pudieron obtener los datos del código QR"
+        }
+        return jsonify(response_data)  # Código de estado 400 para solicitud incorrecta
+
+    # Verificar si el usuario ya está registrado para el evento
+    if not ModelUser.busca_evento_usuario(db, user_id, event_id):
+        # Si el usuario no está registrado, proceder con la actualización en la base de datos
+        if ModelUser.update_eventos_asistidos(db, user_id, event_id):
+            # Preparar la respuesta JSON con los datos del usuario y del evento, así como el mensaje de éxito
+            response_data = {
+                "user_id": user_id,
+                "event_id": event_id,
+                "success_message": "El código QR fue escaneado con éxito :)"
+            }
+            return jsonify(response_data)
+        else:
+            # Si hay un error al actualizar la base de datos, devolver un mensaje de error
+            response_data = {
+                "error_message": "Error al procesar el código QR, inténtalo de nuevo más tarde",
+                "success_message":"Error al procesar el código QR, inténtalo de nuevo más tarde"
+            }
+            return jsonify(response_data)  # Código de estado 500 para error interno del servidor
+    else:
+        # Si el usuario ya está registrado, devolver un mensaje de error
+        response_data = {
+            "error_message": "El usuario ya está registrado para este evento",
+            "success_message":"El usuario ya está registrado para este evento"
+        }
+        return jsonify(response_data)  # Código de estado 400 para solicitud incorrecta
 
 
 @app.route('/protected')

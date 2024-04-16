@@ -1,0 +1,141 @@
+{% extends '/base.html' %}
+{% block title %}ConferExpo - Eventos{% endblock %}
+
+{% block customCSS %}
+<link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/scrollspyNav.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/components/tabs-accordian/custom-tabs.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/animate/animate.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/sweetalerts/sweetalert2.min.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/sweetalerts/sweetalert.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/components/custom-sweetalert.css') }}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/components/cards/card.css') }}" type="text/css">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+{% endblock %}
+
+{% block body %}
+<body>
+    <!-- Barra de navegacion -->
+    {% include 'navBarUser/navAdmin.html' %}
+    <br><br><br>
+    <main>
+        <div id="content" class="content">
+            <div>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <br />
+                {% for message in messages %}
+                <div class="alert alert-primary alert-dismissible" role="alert">
+                    <strong>{{ message }}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+            </div>
+            <h1>Escaneo de Código QR</h1>
+
+            <div id="qrSuccessMessage" class="alert alert-success" style="display: none;" role="alert">
+                El código QR fue escaneado con éxito.
+            </div>
+            <div id="qrErrorMessage" class="alert alert-danger" style="display: none;" role="alert">
+                <!-- Aquí se mostrará el mensaje de error -->
+            </div>
+            <!-- Contenedor para la vista previa de la cámara -->
+             <!-- Contenedor para la vista previa de la cámara -->
+             <div id="video-container"></div>
+            <!-- Contenedor para el mensaje emergente -->
+            
+        </div>
+      
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                .then(stream => {
+                    const videoElement = document.createElement('video');
+                    videoElement.srcObject = stream;
+                    document.getElementById('video-container').appendChild(videoElement);
+                    videoElement.play();
+
+                    setInterval(() => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = videoElement.videoWidth;
+                        canvas.height = videoElement.videoHeight;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+                        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+                        const code = jsQR(imageData.data, imageData.width, imageData.height);
+                        if (code) {
+                            // Obtener el token CSRF del meta tag
+                            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+                            // Enviar el código QR al servidor con el token CSRF incluido en el encabezado
+                            fetch('/process_qr_code', {
+                                method: 'POST',
+                                body: JSON.stringify({ qr_data: code.data }),
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': csrfToken  // Agregar el token CSRF al encabezado
+                                }
+                            })
+                            .then(response => {
+                                if (response.ok) {
+                                    // Mostrar el mensaje emergente de éxito
+                                    response.json().then(data => {
+                                        document.getElementById('qrSuccessMessage').innerText = data.success_message;
+                                        document.getElementById('qrSuccessMessage').style.display = 'block';
+                                        
+                                        // Configurar un temporizador para ocultar el mensaje después de 3 segundos
+                                        setTimeout(() => {
+                                            document.getElementById('qrSuccessMessage').style.display = 'none';
+                                        }, 3000);
+                                    });
+                                    console.log('QR code processed successfully');
+                                } else {
+                                    // Mostrar el mensaje de error
+                                    response.json().then(data => {
+                                        if (data.error_message) {
+                                            // Mostrar el mensaje de error
+                                            document.getElementById('qrErrorMessage').innerText = data.error_message;
+                                            document.getElementById('qrErrorMessage').style.display = 'block';
+                                            
+                                            // Configurar un temporizador para ocultar el mensaje después de 3 segundos
+                                            setTimeout(() => {
+                                                document.getElementById('qrErrorMessage').style.display = 'none';
+                                            }, 3000);
+                                        } else {
+                                            console.error('Failed to process QR code');
+                                        }
+                                    })
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error processing QR code:', error);
+                            });
+                        }
+                    }, 1000);
+                })
+                .catch(error => {
+                    console.error('Error accessing camera:', error);
+                });
+        });
+    </script>
+    {% include '/footer.html' %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/blockui/jquery.blockUI.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/app.js') }}"></script>
+
+<script src="{{ url_for('static', filename='plugins/highlight/highlight.pack.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/custom.js') }}"></script>
+
+<script src="{{ url_for('static', filename='assets/js/scrollspyNav.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/sweetalerts/sweetalert2.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/sweetalerts/custom-sweetalert.js') }}"></script>
+{% endblock %}

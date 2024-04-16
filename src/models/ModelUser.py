@@ -78,3 +78,43 @@ class ModelUser():
             return True, "¡Registro exitoso! Por favor, inicia sesión."
         except Exception as ex:
             return False, str(ex)
+    
+    @classmethod
+    def update_eventos_asistidos(cls, db, user_id, event_id):
+        try:
+            # Convertir el user_id en ObjectId de MongoDB
+            user_object_id = ObjectId(user_id)
+
+            # Actualizar el arreglo eventos_asistidos del usuario
+            result = db.usuarios.update_one(
+                {'_id': user_object_id},
+                {'$addToSet': {'eventos_asistidos': event_id}}
+            )
+
+            return result.modified_count == 1
+        except Exception as ex:
+            print("Error al actualizar eventos asistidos:", ex)
+            return False
+    
+    @classmethod
+    def busca_evento_usuario(cls, db, user_id, event_id):
+        try:
+            # Convertir el user_id en ObjectId de MongoDB
+            user_object_id = ObjectId(user_id)
+    
+            # Realizar una consulta para encontrar al usuario por su ID
+            user = db.usuarios.find_one({'_id': user_object_id})
+    
+            # Verificar si el usuario existe
+            if user:
+                # Verificar si el evento ya está en la lista de eventos asistidos del usuario
+                if event_id in user.get('eventos_asistidos', []):
+                    return True  # El evento ya está en la lista de eventos asistidos del usuario
+                else:
+                    return False  # El evento no está en la lista de eventos asistidos del usuario
+            else:
+                return False  # El usuario no existe en la base de datos
+    
+        except Exception as ex:
+            print("Error al buscar evento para usuario:", ex)
+            return False
