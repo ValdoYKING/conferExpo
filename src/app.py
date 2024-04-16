@@ -1,3 +1,5 @@
+import sys
+print(sys.path)
 import io
 import cv2
 from flask import Flask, jsonify, make_response, render_template, request, redirect, url_for, flash
