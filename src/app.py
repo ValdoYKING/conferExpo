@@ -15,7 +15,7 @@ from wtforms import StringField, SubmitField, StringField, TextAreaField, DateTi
 from wtforms.validators import DataRequired, Optional
 from datetime import datetime
 import qrcode
-from pyzbar.pyzbar import decode
+
 
 
 from config import config
