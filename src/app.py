@@ -32,7 +32,7 @@ IMG_FOLDER = os.path.join("public", "imgEvent")
 
 app.config["UPLOAD_FOLDER"] = IMG_FOLDER
 
-csrf = CSRFProtect()
+csrf = CSRFProtect(app)
 login_manager_app = LoginManager(app)
 
 # Configuración de MongoDB
@@ -97,7 +97,7 @@ def login():
             flash("Usuario o contraseña no válidos")
             return render_template('auth/login.html')
     else:
-        return render_template('auth/login.html',csrf_token=generate_csrf())
+        return render_template('auth/login.html')
 
 @app.route('/homeUser')
 @login_required
