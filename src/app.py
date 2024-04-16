@@ -28,6 +28,8 @@ from models.entities.Evento import Evento
 
 app = Flask(__name__)
 
+app.config['SECRET_KEY'] = 'B!1w8NAt1T^%kvhUI*S^'
+
 IMG_FOLDER = os.path.join("public", "imgEvent")
 
 app.config["UPLOAD_FOLDER"] = IMG_FOLDER
