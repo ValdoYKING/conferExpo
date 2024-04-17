@@ -13,7 +13,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, SubmitField, StringField, TextAreaField, DateTimeField
 from wtforms.validators import DataRequired, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 import qrcode
 
 from config import config
@@ -35,14 +35,19 @@ IMG_FOLDER = os.path.join("public", "imgEvent")
 app.config["UPLOAD_FOLDER"] = IMG_FOLDER
 
 csrf = CSRFProtect(app)
-login_manager_app = LoginManager(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'  # Vista a la que se redirigirá si el usuario no está autenticado
+login_manager.session_protection = "strong"  # Usar protección de sesión "strong" para detectar cambios de IP
+
+# Duración de la sesión
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=15)  # Sesión expira después de 30 minutos de inactividad
 
 # Configuración de MongoDB
 client = MongoClient('mongodb+srv://valdo_asistencia:asistencia2024@valdodev.iaxsmpm.mongodb.net/asistenciaWeb_2024')
 db = client.asistenciaWeb_2024
 
 
-@login_manager_app.user_loader
+@login_manager.user_loader
 def load_user(id):
     return ModelUser.get_by_id(db, id)
 
