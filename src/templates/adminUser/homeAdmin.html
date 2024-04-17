@@ -44,7 +44,7 @@
                             <img src="https://via.placeholder.com/150" class="card-img-top" alt="Imagen no disponible">
                             {% endif %}
                             <div class="card-body">
-                                <p class="meta-date">{{ evento.fecha }}</p>
+                                <p class="meta-date">{{ evento.fecha }} | {{ evento.fecha_hora_inicio}} hrs</p>
                                 <h5 class="card-title">{{ evento.nombre }}</h5>
                                 <p class="card-text">{{ evento.resumen }}</p>            
                                 <div class="meta-info">
