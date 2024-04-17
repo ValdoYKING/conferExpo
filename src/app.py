@@ -498,7 +498,8 @@ def editarEvento(_id):
                flash(message, 'error')
                return redirect(url_for('editarEvento', _id=_id))
     else:
-        abort(404)
+        #abort(404)
+        return render_template('error/404.html'), 404
 
 @app.route("/scan_qr_event")
 @login_required
@@ -588,6 +589,7 @@ def status_401(error):
 def status_403(error):
     return render_template('error/403.html'),403
 
+@app.errorhandler(404)
 def status_404(error):
     return render_template('error/404.html'),404
 
@@ -601,6 +603,6 @@ def status_503(error):
 if __name__ == '__main__':
     app.config.from_object(config['development'])
     csrf.init_app(app)
-    app.register_error_handler(401, status_401)
-    app.register_error_handler(404, status_404)
+    #app.register_error_handler(401, status_401)
+    #app.register_error_handler(404, status_404)
     app.run(debug=True, host="0.0.0.0",port=os.getenv("PORT",default=5000))
