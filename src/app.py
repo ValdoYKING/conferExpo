@@ -119,7 +119,8 @@ def homeUser():
 
         return render_template("userConferExpo/homeUser.html", eventos=eventos, nombre_usuario=nombre_usuario)
     else:
-        abort(404)
+        #abort(404)
+        return render_template('error/404.html'), 404
 
 @app.route('/showEventUser/<_id>', methods=['GET', 'POST'])
 @login_required
@@ -174,7 +175,8 @@ def showEventUser(_id):
 
             return render_template('userConferExpo/showEventUser.html', eventoID=eventoID, fecha_formateada=fecha_formateada, num_usuarios_registrados=num_usuarios_registrados, disponibilidad=disponibilidad,dias_restantes=dias_restantes, horas_restantes=horas_restantes, minutos_restantes=minutos_restantes, segundos_restantes=segundos_restantes, fecha_hora_inicio=fecha_hora_inicio, year=year, month=month, day=day, nombre_usuario=nombre_usuario, registrado=registrado)
         else:
-            abort(404)
+            #abort(404)
+            return render_template('error/404.html'), 404
     
 @app.route('/assistEvent/<evento_id>', methods=['POST'])
 @login_required
@@ -221,7 +223,8 @@ def assistUserList():
 
         return render_template("userConferExpo/assistUserList.html", eventos=eventos, nombre_usuario=nombre_usuario)
     else:
-        abort(404)
+        #abort(404)
+        return render_template('error/404.html'), 404
 
 # Ruta para generar el código QR
 @app.route('/generate_qr/<user_id>/<event_id>')
@@ -279,7 +282,8 @@ def homeAdmin():
         return render_template("adminUser/homeAdmin.html", eventos=eventos, nombre_usuario=nombre_usuario)
     else:
         # Si el usuario no es un administrador, redirigir a una página de error 404
-        abort(404)
+        #abort(404)
+        return render_template('error/404.html'), 404
 
 
 
@@ -296,7 +300,8 @@ def newEvent():
         return render_template('adminUser/newEvent.html', nombre_usuario=nombre_usuario)
     else:
         # Si el usuario no es un administrador, redirigir a una página de error 404
-        abort(404)
+        #abort(404)
+        return render_template('error/404.html'), 404
 
 
 @app.route('/registerEvent', methods=['GET', 'POST'])
@@ -366,7 +371,8 @@ def registerEvent():
         else:
             return render_template('adminUser/newEvent.html')
     else:
-        abort(404)
+        #abort(404)
+        return render_template('error/404.html'), 404
     
 @app.route('/mostrar_imagen/<filename>')
 def mostrar_imagen(filename):
@@ -376,7 +382,8 @@ def mostrar_imagen(filename):
         return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
     except FileNotFoundError:
         # Si no se encuentra el archivo, regresa un error 404
-        abort(404)
+        #abort(404)
+        return render_template('error/404.html'), 404
         
 @app.route('/show_image/<filename>')
 def show_image(filename):
@@ -430,7 +437,8 @@ def showEvent(_id):
 
             return render_template('adminUser/showEvent.html', eventoID=eventoID, fecha_formateada=fecha_formateada, num_usuarios_registrados=num_usuarios_registrados, disponibilidad=disponibilidad,dias_restantes=dias_restantes, horas_restantes=horas_restantes, minutos_restantes=minutos_restantes, segundos_restantes=segundos_restantes, fecha_hora_inicio=fecha_hora_inicio, year=year, month=month, day=day, nombre_usuario=nombre_usuario)
         else:
-            abort(401)
+            #abort(401)
+            return render_template('error/404.html'), 404
    
 @app.route('/editarEvento/<_id>', methods=['GET', 'POST'])
 @login_required
@@ -516,7 +524,8 @@ def scan_qr_event():
         return render_template("adminUser/scan_qr_event.html", eventos=eventos, nombre_usuario=nombre_usuario)
     else:
         # Si el usuario no es un administrador, redirigir a una página de error 404
-        abort(404)
+        #abort(404)
+        return render_template('error/404.html'), 404
         
 @app.route("/process_qr_code", methods=["POST"])
 def process_qr_code():
