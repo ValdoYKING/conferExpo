@@ -580,6 +580,18 @@ def process_qr_code():
             "success_message":"El usuario ya está registrado para este evento"
         }
         return jsonify(response_data)  # Código de estado 400 para solicitud incorrecta
+    
+@app.route('/usersList' , methods=['GET', 'POST'])
+@login_required
+def usersList():
+    if current_user.rol == "administrador":
+        nombre_usuario = current_user.username
+        return render_template('adminUser/usersList.html', nombre_usuario=nombre_usuario)
+    else:
+        # Si el usuario no es un administrador, redirigir a una página de error 404
+        #abort(404)
+        return render_template('error/404.html'), 404
+        
 
 
 @app.route('/protected')
