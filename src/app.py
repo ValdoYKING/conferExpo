@@ -430,7 +430,7 @@ def showEvent(_id):
 
             return render_template('adminUser/showEvent.html', eventoID=eventoID, fecha_formateada=fecha_formateada, num_usuarios_registrados=num_usuarios_registrados, disponibilidad=disponibilidad,dias_restantes=dias_restantes, horas_restantes=horas_restantes, minutos_restantes=minutos_restantes, segundos_restantes=segundos_restantes, fecha_hora_inicio=fecha_hora_inicio, year=year, month=month, day=day, nombre_usuario=nombre_usuario)
         else:
-            abort(404)
+            abort(401)
    
 @app.route('/editarEvento/<_id>', methods=['GET', 'POST'])
 @login_required
