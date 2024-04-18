@@ -1,5 +1,6 @@
 from .entities.User import User
 from bson.objectid import ObjectId
+from .ModelEvento import ModelEvento
 
 class ModelUser():
 
@@ -22,7 +23,8 @@ class ModelUser():
                         result.get('correo_electronico', ''),  # Manejo de nuevo atributo
                         result.get('eventos_asistidos', []),  # Manejo de nuevo atributo
                         result.get('motivo_prof', ''),  # Manejo de nuevo atributo
-                        result.get('rol', 'usuario')  # Manejo del nuevo atributo de rol
+                        result.get('rol', 'usuario'),  # Manejo del nuevo atributo de rol
+                        result.get('eventos_por_assistir', []),  # Manejo del nuevo atributo de eventos_por_assistir
                     )
             return None
         except Exception as ex:
@@ -47,7 +49,8 @@ class ModelUser():
                     result.get('correo_electronico', ''),  # Manejo de nuevo atributo
                     result.get('eventos_asistidos', []),  # Manejo de nuevo atributo
                     result.get('motivo_prof', ''),  # Manejo de nuevo atributo
-                    result.get('rol', 'usuario')  # Manejo del nuevo atributo de rol
+                    result.get('rol', 'usuario'),  # Manejo del nuevo atributo de rol
+                    result.get('eventos_por_assistir', [])  # Manejo del nuevo atributo de eventos_por_assistir
                 )
             return None
         except Exception as ex:
@@ -118,3 +121,73 @@ class ModelUser():
         except Exception as ex:
             print("Error al buscar evento para usuario:", ex)
             return False
+        
+    @classmethod
+    def update_usuario_assist(cls, db, user_id, event_id):
+        try:
+            # Obtener al usuario por su ID
+            user = cls.get_by_id(db, user_id)
+            if not user:
+                raise Exception("El usuario no existe")
+
+            # Agregar el ID del evento a la lista de eventos por asistir del usuario
+            if event_id not in user.eventos_por_assistir:
+                user.eventos_por_assistir.append(event_id)
+
+            # Actualizar el usuario en la base de datos
+            db.usuarios.update_one({"_id": ObjectId(user_id)}, {"$set": {"eventos_por_assistir": user.eventos_por_assistir}})
+
+            return True, "¡Usuario actualizado exitosamente!"
+        except Exception as ex:
+            return False, str(ex)
+    
+    @classmethod
+    def get_all_eventos_por_assistir_by_user(cls, db, user_id):
+        try:
+            # Obtener al usuario por su ID
+            user = cls.get_by_id(db, user_id)
+            if not user:
+                raise Exception("El usuario no existe")
+
+            # Obtener todos los IDs de eventos por asistir del usuario
+            eventos_por_assistir_ids = user.eventos_por_assistir
+
+            # Inicializar una lista para almacenar la información de todos los eventos por asistir
+            eventos_por_assistir_info = []
+
+            # Obtener la información de cada evento por asistir usando el método get_evento_by_id del modelo de eventos
+            for evento_id in eventos_por_assistir_ids:
+                evento_info = ModelEvento.get_evento_by_id(db, evento_id)
+                if evento_info:
+                    eventos_por_assistir_info.append(evento_info)
+
+            return eventos_por_assistir_info
+
+        except Exception as ex:
+            print("Error al obtener eventos por asistir del usuario:", ex)
+            return None
+        
+    @classmethod
+    def delete_evento_asistido_by_user(cls, db, user_id, event_id):
+        try:
+            # Obtener al usuario por su ID
+            user = cls.get_by_id(db, user_id)
+            if not user:
+                raise Exception("El usuario no existe")
+
+            # Verificar si el evento está en la lista de eventos por asistir del usuario
+            if event_id in user.eventos_por_assistir:
+                # Eliminar el evento de la lista de eventos por asistir
+                user.eventos_por_assistir.remove(event_id)
+
+                # Actualizar el usuario en la base de datos
+                db.usuarios.update_one({"_id": ObjectId(user_id)}, {"$set": {"eventos_por_assistir": user.eventos_por_assistir}})
+
+                return True, "El evento ha sido eliminado de la lista de eventos por asistir."
+            else:
+                return False, "El evento no está en la lista de eventos por asistir del usuario."
+
+        except Exception as ex:
+            print("Error al eliminar evento asistido por usuario:", ex)
+            return False, "Error al eliminar evento asistido por usuario."
+

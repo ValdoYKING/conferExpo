@@ -38,14 +38,14 @@
                 <div class="widget-content widget-content-area layout-top-spacing">
                     <div class="card-container-card"> <!-- Contenedor para las tarjetas -->
                         {% for evento in eventos %}
-                        <div class="card component-card_9" data-event-id="{{ evento._id }}">
+                        <div class="card component-card_9" data-event-id="{{ evento.id }}">
                             {% if evento.imagen %}
                             <img class="card-img-top" src="{{ url_for('show_image', filename=evento.imagen)}}" alt="Imagen del evento {{ evento.nombre }}">
                             {% else %}
                             <img src="https://via.placeholder.com/150" class="card-img-top" alt="Imagen no disponible">
                             {% endif %}
                             <div class="card-body">
-                                <p class="meta-date">{{ evento.fecha }}</p>
+                                <p class="meta-date">{{ evento.fecha }} | {{ evento.fecha_hora_inicio}} hrs</p>
                                 <h5 class="card-title">{{ evento.nombre }}</h5>
                                 <p class="card-text">{{ evento.resumen }}</p>            
                                 <div class="meta-info">

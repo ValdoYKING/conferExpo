@@ -19,6 +19,7 @@ class ModelEvento:
             return eventos, "¡Eventos encontrados exitosamente!"
         except Exception as ex:
             return None, str(ex)
+        
     @classmethod
     def get_all_eventos_by_user(cls, db, user_id):
         try:

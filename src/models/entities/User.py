@@ -4,7 +4,7 @@ from bson.objectid import ObjectId
 
 class User(UserMixin):
 
-    def __init__(self, id=None, username=None, password=None, nombre="", matricula=None, telefono=None, correo_electronico=None, eventos_asistidos=None, motivo_prof="",rol=""):
+    def __init__(self, id=None, username=None, password=None, nombre="", matricula=None, telefono=None, correo_electronico=None, eventos_asistidos=None, motivo_prof="",rol="", eventos_por_assistir=None):
         self.id = id
         self.username = username
         self.password = password
@@ -15,6 +15,7 @@ class User(UserMixin):
         self.eventos_asistidos = eventos_asistidos or []
         self.motivo_prof = motivo_prof
         self.rol = rol
+        self.eventos_por_assistir = eventos_por_assistir or []
 
     @classmethod
     def hash_password(cls, password):

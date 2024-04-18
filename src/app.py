@@ -200,7 +200,12 @@ def assistEvent(evento_id):
                 # Actualizar el evento en la base de datos
                 success, message = ModelEvento.update_evento_assist(db, evento_id, evento)
                 if success:
-                    flash('Te has registrado correctamente para el evento.', 'success')
+                    # Agregar el evento a la lista de eventos por asistir del usuario
+                    success_user, message_user = ModelUser.update_usuario_assist(db, user_id, evento_id)
+                    if success_user:
+                        flash('Te has registrado correctamente para el evento.', 'success')
+                    else:
+                        flash(f'Error al actualizar eventos por asistir para el usuario: {message_user}', 'error')
                 else:
                     flash(f'Error al registrar para el evento: {message}', 'error')
         else:
@@ -209,6 +214,7 @@ def assistEvent(evento_id):
     # Redirigir de vuelta a la página de inicio o a donde desees
     return redirect(url_for('homeUser'))
 
+
 @app.route('/assistUserList')
 @login_required
 def assistUserList():
@@ -216,15 +222,19 @@ def assistUserList():
         nombre_usuario = current_user.username
         user_id = current_user.id
         # Obtener todos los eventos
-        eventos, mensaje = ModelEvento.get_all_eventos_by_user(db, user_id)
+        #eventos, mensaje = ModelEvento.get_all_eventos_by_user(db, user_id)
+        eventos_por_assistir = ModelUser.get_all_eventos_por_assistir_by_user(db, user_id)
 
-        if eventos is None:
+        if eventos_por_assistir is None:
+            mensaje = "Error al obtener eventos por asistir."
             return render_template("userConferExpo/assistUserList.html", error=mensaje)
 
-        return render_template("userConferExpo/assistUserList.html", eventos=eventos, nombre_usuario=nombre_usuario)
+        return render_template("userConferExpo/assistUserList.html", eventos=eventos_por_assistir, nombre_usuario=nombre_usuario)
     else:
         #abort(404)
         return render_template('error/404.html'), 404
+
+
 
 # Ruta para generar el código QR
 @app.route('/generate_qr/<user_id>/<event_id>')
@@ -560,6 +570,7 @@ def process_qr_code():
         # Si el usuario no está registrado, proceder con la actualización en la base de datos
         if ModelUser.update_eventos_asistidos(db, user_id, event_id):
             # Preparar la respuesta JSON con los datos del usuario y del evento, así como el mensaje de éxito
+            ModelUser.delete_evento_asistido_by_user(db, user_id, event_id)
             response_data = {
                 "user_id": user_id,
                 "event_id": event_id,
