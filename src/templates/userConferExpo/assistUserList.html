@@ -86,7 +86,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> Hecho</button>
+                        <!-- <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> Hecho</button> -->
+                        <button class="btn" data-dismiss="modal" id="btnCloseModal"><i class="flaticon-cancel-12"></i> Cerrar QR</button>
                     </div>
                 </div>
             </div>
@@ -113,6 +114,12 @@
                 // Actualiza el atributo "src" de la etiqueta <img> con la URL del QR
                 $('#qr-code-img').attr('src', qrUrl);
             });
+        });
+
+         // Agregar un event listener para el evento "hidden.bs.modal" que se dispara cuando se cierra el modal
+        $('#modalQR').on('hidden.bs.modal', function (e) {
+            // Recargar la página
+            location.reload();
         });
     </script>
     <script src="{{ url_for('static', filename='plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
