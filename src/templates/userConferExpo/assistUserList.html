@@ -42,7 +42,7 @@
                             {% if evento.imagen %}
                             <img class="card-img-top" src="{{ url_for('show_image', filename=evento.imagen)}}" alt="Imagen del evento {{ evento.nombre }}">
                             {% else %}
-                            <img src="https://via.placeholder.com/150" class="card-img-top" alt="Imagen no disponible">
+                            <img src="https://via.placeholder.com/150" class="card-img-top" alt="Imagen no disponible :c">
                             {% endif %}
                             <div class="card-body">
                                 <p class="meta-date">{{ evento.fecha }} | {{ evento.fecha_hora_inicio}} hrs</p>
@@ -51,7 +51,7 @@
                                 <div class="meta-info">
                                     <div class="meta-user">
                                         <div class="user-name text-center">
-                                            <a href="{{ url_for('showEventUser', _id=evento._id) }}" class="btn btn-secondary btn-rounded mb-1">Ver detalles</a>
+                                            <a href="{{ url_for('showEventUser', _id=evento.id) }}" class="btn btn-secondary btn-rounded mb-1">Ver detalles</a>
                                         </div>
                                     </div>
                                     <div class="meta-user text-center">
