@@ -191,3 +191,12 @@ class ModelUser():
             print("Error al eliminar evento asistido por usuario:", ex)
             return False, "Error al eliminar evento asistido por usuario."
 
+   
+    @classmethod
+    def get_all_user(cls, db):
+        try:
+            # Obtener todos los usuarios de la base de datos
+            users = list(db.usuarios.find({}))
+            return users, "¡Usuarios encontrados exitosamente!"
+        except Exception as ex:
+            return None, str(ex)
