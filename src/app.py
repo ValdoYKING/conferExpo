@@ -574,7 +574,7 @@ def process_qr_code():
             response_data = {
                 "user_id": user_id,
                 "event_id": event_id,
-                "success_message": "El código QR fue escaneado con éxito :)"
+                "success_message": "El usuario fue registrado con éxito ;)"
             }
             return jsonify(response_data)
         else:
