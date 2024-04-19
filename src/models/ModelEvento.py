@@ -69,8 +69,6 @@ class ModelEvento:
         except Exception as ex:
             return False, str(ex)
     
-
-    
     @classmethod
     def delete_evento(cls, db, id):
         try:
@@ -107,19 +105,19 @@ class ModelEvento:
             raise Exception(ex)
     
     @classmethod
-    def update_evento_assist(cls, db, id, evento):
+    def update_evento_assist(cls, db, id, user_id):
         try:
             # Obtener el evento existente de la base de datos
             evento_existente = db.eventos.find_one({"_id": ObjectId(id)})
             if not evento_existente:
                 raise Exception("El evento no existe")
-
+    
             # Agregar el usuario al arreglo de usuarios registrados
-            if evento.usuarios_registrados:
-                if 'usuarios_registrados' not in evento_existente:
-                    evento_existente['usuarios_registrados'] = []
-                evento_existente['usuarios_registrados'].extend(evento.usuarios_registrados)
-
+            if 'usuarios_registrados' not in evento_existente:
+                evento_existente['usuarios_registrados'] = []
+            if user_id not in evento_existente['usuarios_registrados']:
+                evento_existente['usuarios_registrados'].append(user_id)
+    
             # Actualizar el evento en la base de datos
             db.eventos.update_one({"_id": ObjectId(id)}, {"$set": evento_existente})
             return True, "¡Evento actualizado exitosamente!"
@@ -156,11 +154,42 @@ class ModelEvento:
     @classmethod
     def get_all_eventos_proximos(cls, db):
         try:
-            fecha_actual_mexico = datetime.now()
-            fecha_formateada = fecha_actual_mexico.strftime("%Y-%m-%d")
+            fecha_actual = datetime.now()
+            fecha_formateada = fecha_actual.strftime("%Y-%m-%d")
             
             eventos_proximos = list(db.eventos.find({"fecha": {"$gte": fecha_formateada}}))
             return eventos_proximos, "¡Eventos próximos encontrados exitosamente!"
         except Exception as ex:
             return None, str(ex)
     
+    @classmethod
+    def get_all_eventos_proximos_fecha_hora_inicio(cls, db):
+        try:
+            # Obtener la fecha y hora actual
+            fecha_hora_actual = datetime.now()
+
+            # Formatear la fecha y hora actual como "AAAA-MM-DD HH:MM"
+            fecha_hora_actual_str = fecha_hora_actual.strftime("%Y-%m-%d %H:%M")
+
+            # Obtener todos los eventos cuya fecha y hora de inicio sean iguales o mayores a la fecha y hora actual
+            eventos_proximos = list(db.eventos.find({"$or": [
+                {"fecha": {"$gt": fecha_hora_actual_str[:10]}},  # Compara solo la fecha
+                {"fecha": fecha_hora_actual_str[:10], "fecha_hora_inicio": {"$gte": fecha_hora_actual_str[11:]}},  # Compara fecha y hora de inicio
+            ]}))
+
+            return eventos_proximos, "¡Eventos próximos encontrados exitosamente!"
+        except Exception as ex:
+            return None, str(ex)
+    
+    @classmethod
+    def count_usuarios_registrados(cls, db, evento_id):
+        try:
+            evento = db.eventos.find_one({"_id": ObjectId(evento_id)})
+            if evento:
+                usuarios_registrados = evento.get("usuarios_registrados", [])
+                return len(usuarios_registrados)
+            else:
+                return 0
+        except Exception as ex:
+            print(f"Error counting usuarios registrados: {ex}")
+            return 0

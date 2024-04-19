@@ -112,7 +112,7 @@ def homeUser():
     if current_user.rol == "usuario":
         nombre_usuario = current_user.username
         # Obtener todos los eventos
-        eventos, mensaje = ModelEvento.get_all_eventos(db)
+        eventos, mensaje = ModelEvento.get_all_eventos_proximos_fecha_hora_inicio(db)
 
         if eventos is None:
             return render_template("userConferExpo/homeUser.html", error=mensaje)
@@ -186,19 +186,20 @@ def assistEvent(evento_id):
     
     # Verificar si se recibió una solicitud POST
     if request.method == 'POST':
-        # Obtener el evento por su ID
+        # Obtener el evento por su ID utilizando el método del modelo
         evento = ModelEvento.get_evento_by_id(db, evento_id)
 
         # Verificar si se encontró el evento
         if evento:
-            # Verificar si el usuario ya está registrado para este evento
-            if user_id in evento.usuarios_registrados:
-                flash('Ya estás registrado para este evento.', 'warning')
+            # Verificar si hay lugares disponibles para el evento
+            aforo = int(evento.aforo)
+            if aforo <= len(evento.usuarios_registrados):
+                flash('No hay lugares disponibles para este evento.', 'error')
             else:
                 # Registrar al usuario para el evento
-                evento.registrar_usuario(user_id)
+                #evento.registrar_usuario(user_id)
                 # Actualizar el evento en la base de datos
-                success, message = ModelEvento.update_evento_assist(db, evento_id, evento)
+                success, message = ModelEvento.update_evento_assist(db, evento_id, user_id)
                 if success:
                     # Agregar el evento a la lista de eventos por asistir del usuario
                     success_user, message_user = ModelUser.update_usuario_assist(db, user_id, evento_id)

@@ -37,14 +37,21 @@
                         <div class="col-md-6 align-self-center order-md-0 order-1">
                             <h1 class="">{{ eventoID.nombre }}</h1>
                             <p class="">{{ eventoID.resumen }}</p>
-                            {% if registrado == 0 %}
-                            <form action="{{ url_for('assistEvent', evento_id=eventoID.id) }}" method="post">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button type="submit" class="btn">Registrarme</button>
-                            </form>
-                            {% elif registrado == 1%}
-                            <button class="btn exitoso">Registrado</button>
+                            {% if eventoID.estatus_evento != 1 %}
+                                {% if disponibilidad <= 0 %}
+                                    <button class="btn btn-danger">Sin lugares disponibles</button>
+                                {% else %}
+                                    {% if registrado == 0 %}
+                                        <form action="{{ url_for('assistEvent', evento_id=eventoID.id) }}" method="post">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn">Registrarme</button>
+                                        </form>
+                                    {% elif registrado == 1 %}
+                                        <button class="btn exitoso">Registrado</button>
+                                    {% endif %}
+                                {% endif %}
                             {% endif %}
+
                             
                             
 

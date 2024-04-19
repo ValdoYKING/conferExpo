@@ -155,7 +155,7 @@
                                         <div class="widget-header">
                                             <div class="row">
                                                 <div class="col-xl-12 col-md-12 col-sm-12 col-12">
-                                                    <h4>{{eventoID.nombre}} comienza en...{{dias_restantes}}</h4>
+                                                    <h4>{{eventoID.nombre}} comienza en...</h4>
                                                 </div>
                                             </div>
                                         </div>
@@ -267,7 +267,6 @@
 
         // Construye la cadena de formato de fecha y hora
         var getFullFormat = `${year}/${month}/${day} ${hour}:${minute}:${second}`;
-        console.log(getFullFormat);
 
         // Inicializa el temporizador con la fecha y hora especificadas
         $('#cd-simple-2nn').countdown(getFullFormat, function(event) {

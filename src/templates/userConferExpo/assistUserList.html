@@ -40,9 +40,9 @@
                         {% for evento in eventos %}
                         <div class="card component-card_9" data-event-id="{{ evento.id }}">
                             {% if evento.imagen %}
-                            <img class="card-img-top" src="{{ url_for('show_image', filename=evento.imagen)}}" alt="Imagen del evento {{ evento.nombre }}">
+                            <img class="card-img-top {% if evento.estatus_evento == 1 %} blanco-y-negro {% endif %}" src="{{ url_for('show_image', filename=evento.imagen)}}" alt="Imagen del evento {{ evento.nombre }}">
                             {% else %}
-                            <img src="https://via.placeholder.com/150" class="card-img-top" alt="Imagen no disponible :c">
+                            <img src="{{ url_for('static',filename=img/confer_default.jpg)}}" class="card-img-top" alt="Imagen no disponible">
                             {% endif %}
                             <div class="card-body">
                                 <p class="meta-date">{{ evento.fecha }} | {{ evento.fecha_hora_inicio}} hrs</p>
@@ -50,16 +50,24 @@
                                 <p class="card-text">{{ evento.resumen }}</p>            
                                 <div class="meta-info">
                                     <div class="meta-user">
-                                        <div class="user-name text-center">
-                                            <a href="{{ url_for('showEventUser', _id=evento.id) }}" class="btn btn-secondary btn-rounded mb-1">Ver detalles</a>
-                                        </div>
+                                                {% if evento.estatus_evento != 1 %}
+                                                    <a href="{{ url_for('showEventUser', _id=evento.id) }}" class="btn btn-secondary btn-rounded mb-1">Ver detalles</a>
+                                                {% endif %}
+                                                {% if evento.estatus_evento == 1 %}
+                                                    <!-- <span class="btn btn-secondary btn-rounded mb-1">Cancelado</span> -->
+                                                    <div class="cancelado-overlay text-danger">Cancelado</div>
+                                                {% endif %}
                                     </div>
                                     <div class="meta-user text-center">
+                                        {% if evento.estatus_evento != 1 %}
                                         <div class="user-name">
                                             <button type="button" class="btn btn-secondary qr-event btn-rounded mb-1" data-toggle="modal" data-target="#modalQR">
                                                 QR de asistencia
                                             </button>
                                         </div>
+                                        {% endif %}
+                                        {% if evento.estatus_evento == 1 %}
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
