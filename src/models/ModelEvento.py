@@ -1,7 +1,6 @@
 from .entities.Evento import Evento
 from bson.objectid import ObjectId
 from datetime import datetime
-import pytz
 
 class ModelEvento:
 
@@ -157,8 +156,7 @@ class ModelEvento:
     @classmethod
     def get_all_eventos_proximos(cls, db):
         try:
-            zona_horaria_mexico = pytz.timezone('America/Mexico_City')
-            fecha_actual_mexico = datetime.now(zona_horaria_mexico)
+            fecha_actual_mexico = datetime.now()
             fecha_formateada = fecha_actual_mexico.strftime("%Y-%m-%d")
             
             eventos_proximos = list(db.eventos.find({"fecha": {"$gte": fecha_formateada}}))
