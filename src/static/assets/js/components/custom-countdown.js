@@ -6,7 +6,7 @@ $('#cd-simple').countdown(getFullFormat, function(event) {
   var $this = $(this).html(event.strftime(''
     +'<div class="countdown">'+
         '<div class="clock-count-container">'+
-            '<h1 class="clock-val">%d</h1>'+
+            '<h1 class="clock-val">%D</h1>'+
         '</div>'+
         '<h4 class="clock-text"> Days </h4>'+
     '</div>'+
@@ -34,7 +34,7 @@ $('#cd-circle').countdown(getFullFormat, function(event) {
   var $this = $(this).html(event.strftime(''
     +'<div class="countdown">'+
         '<div class="clock-count-container">'+
-            '<h1 class="clock-val">365</h1>'+
+            '<h1 class="clock-val">%D</h1>'+
         '</div>'+
         '<h4 class="clock-text"> Days </h4>'+
     '</div>'+

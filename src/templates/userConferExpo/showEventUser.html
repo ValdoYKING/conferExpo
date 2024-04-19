@@ -147,7 +147,7 @@
                                         <div class="widget-header">
                                             <div class="row">
                                                 <div class="col-xl-12 col-md-12 col-sm-12 col-12">
-                                                    <h4>El evento comienza en...</h4>
+                                                    <h4>{{eventoID.nombre}} comienza en...</h4>
                                                 </div>
                                             </div>
                                         </div>
@@ -231,16 +231,16 @@
         var annio = parseInt("{{ year }}");
         var mes = parseInt("{{ month }}");
         var dia = parseInt("{{ day }}");
-        var diasRestantes = parseInt("{{ dias_restantes }}");
-        var horasRestantes = parseInt("{{ fecha_hora_inicio['hora'] }}");
-        var minutosRestantes = parseInt("{{ fecha_hora_inicio['minutos'] }}");
-        var segundosRestantes = parseInt("{{ segundos_restantes }}");
+        var hora = parseInt("{{ fecha_hora_inicio['hora'] }}");
+        var minuto = parseInt("{{ fecha_hora_inicio['minutos'] }}");
+        //var segundosRestantes = parseInt("{{ segundos_restantes }}");
+
                 // Define tus propios valores para el temporizador
         var year = annio; // Año deseado
         var month = mes; // Mes deseado (10 representa octubre)
         var day = dia; // Día deseado
-        var hour = horasRestantes; // Hora deseada
-        var minute = minutosRestantes; // Minuto deseado
+        var hour = hora; // Hora deseada
+        var minute = minuto; // Minuto deseado
         var second = 0; // Segundo deseado
 
         // Construye la cadena de formato de fecha y hora
@@ -251,7 +251,7 @@
           var $this = $(this).html(event.strftime(''
             +'<div class="countdown">'+
                 '<div class="clock-count-container">'+
-                    '<h1 class="clock-val">%d</h1>'+
+                    '<h1 class="clock-val">%D</h1>'+
                 '</div>'+
                 '<h4 class="clock-text"> Dias </h4>'+
             '</div>'+
@@ -274,37 +274,6 @@
                 '<h4 class="clock-text"> Sec </h4>'+
             '</div>'));
         });
-
-
-        function actualizarContador() {
-            // Obtener los valores de días, horas, minutos y segundos restantes de tu backend
-            var diasRestantes = parseInt("{{ dias_restantes }}");
-            var horasRestantes = parseInt("{{ fecha_hora_inicio['hora'] }}");
-            var minutosRestantes = parseInt("{{ minutos_restantes }}");
-            var segundosRestantes = parseInt("{{ segundos_restantes }}");
-            console.log(diasRestantes, horasRestantes, minutosRestantes, segundosRestantes);
-    
-            // Actualizar el contenido de los elementos HTML con los nuevos valores
-            document.querySelector(".clock-val:nth-child(1)").textContent = diasRestantes;
-            document.querySelector(".clock-val:nth-child(3)").textContent = horasRestantes;
-            document.querySelector(".clock-val:nth-child(5)").textContent = minutosRestantes;
-            document.querySelector(".clock-val:nth-child(7)").textContent = segundosRestantes;
-        }
-    
-        // Llamar a la función actualizarContador inicialmente
-        actualizarContador();
-    
-        // Actualizar el contador cada segundo
-        setInterval(actualizarContador, 1000);
-        //Button sweet alert
-        $('.widget-content .exitoso').on('click', function () {
-            swal({
-                title: 'Evento guardado!',
-                text: "Se ha registrado con exito!",
-                type: 'success',
-                padding: '2em'
-              })
-          })
 
 
     </script>
