@@ -26,23 +26,40 @@
 <body class="admin-header" data-spy="scroll" data-target="#navSection" data-offset="100">
     <!-- Barra de navegacion -->
     {% include 'navBarUser/navAdmin.html' %}
-    <br><br><br>
+    <br><br><br><br>
     <main>
+        <div id="wizards_pills" class="col-lg-12">
+            <div class="seperator-header">
+                <h4 class="">Detalles del evento | {{ eventoID.nombre }}</h4>
+            </div>
+        </div>  
         <div class="main-content">
             <div class="admin-data-content layout-top-spacing">
-
             <div class="fq-header-wrapper">
                 <div class="container">
                     <div class="row">
                         <div class="col-md-6 align-self-center order-md-0 order-1">
                             <h1 class="">{{ eventoID.nombre }}</h1>
                             <p class="">{{ eventoID.resumen }}</p>
-                            <a href="{{ url_for('editarEvento', _id=eventoID.id) }}"><button class="btn">Editar</button></a>
-                            
+                            {% if eventoID.estatus_evento == 0 %}
+                            <p><a href="{{ url_for('editarEvento', _id=eventoID.id) }}"><button class="btn">Editar</button></a></p>
+                               <p>
+                                    <form class="cancelar-evento" action="{{ url_for('cancelEvent', evento_id=eventoID.id) }}" method="post">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <!-- <button type="submit" class="btn">Cancelar evento</button> -->
+                                        <button class="btn">Cancelar evento</button>
+                                    </form>                      
+                                </p>                               
+                                <!-- <a href="{{ url_for('editarEvento', _id=eventoID.id) }}"><button class="btn">Cancelar evento</button></a> -->
+                            {% elif eventoID.estatus_evento == 1%}
+                                <h3>Evento cancelado</h3>
+                            {% endif %}
                         </div>
                         <div class="col-md-6 order-md-0 order-0">
                             <div class="banner-img">
+                                <br>
                                 <img class="img-fluid imagen-grande" src="{{ url_for('show_image', filename=eventoID.imagen)}}" alt="Imagen del evento {{ eventoID.nombre }}">
+                                <br>
                             </div>
                         </div>
                     </div>
@@ -101,15 +118,13 @@
                                           <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
                                             <blockquote class="blockquote">
                                                 <h3 class="mb-4"><lord-icon src="https://cdn.lordicon.com/abfverha.json" trigger="hover" style="width:24px;height:24px"></lord-icon>Lugar y fecha</h3>
-                                                <p class="mb-4"><h5>Fecha</h5></p>
-                                                <p class="mb-4"><h6> {{fecha_formateada }}</h6></p>
-                                                <p class="mb-4"><h6> Hora de inicio: {{ eventoID.fecha_hora_inicio }}</h6></p>
-                                                <p class="mb-4"><h6> Hora de fin: {{ eventoID.fecha_hora_fin }}</h6></p>
-                                                <p class="mb-4">
-                                                    <h5>Lugar</h5>
-                                                </p>
+                                                <p class="mb-4"><h5>Lugar</h5></p>
                                                 <p class="mb-4"><h6> Direccion: {{ eventoID.lugar }}</h6></p>
                                                 <p class="mb-4"><h6> Referencias de la ubicación: {{ eventoID.referencias }}</h6></p>
+                                                <p class="mb-4"><h5>Fecha</h5></p>
+                                                <p class="mb-4"><h6> {{fecha_formateada }}</h6></p>
+                                                <p class="mb-4"><h6> Hora de inicio: {{ eventoID.fecha_hora_inicio }} hrs</h6></p>
+                                                <p class="mb-4"><h6> Hora de fin: {{ eventoID.fecha_hora_fin }} hrs</h6></p>
                                             </blockquote>
                                           </div>
                                           
@@ -190,6 +205,28 @@
 {% endblock %}
 
 {% block scripts %}   
+    <script>
+      //Button sweet alert
+      $('.cancelar-evento').on('submit', function (event) {
+          event.preventDefault(); // Evita que el formulario se envíe normalmente
+          
+          var form = $(this); // Guarda una referencia al formulario actual
+        
+          swal({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esto!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Cancelar evento',
+            padding: '2em'
+          }).then(function (result) {
+            if (result.value) {
+              // Si se confirma la cancelación, envía el formulario
+              form.unbind('submit').submit(); // Desvincula el evento de submit para evitar la llamada recursiva
+            }
+          });
+        });
+    </script>
     <script src="{{ url_for('static', filename='plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
     <script src="{{ url_for('static', filename='plugins/blockui/jquery.blockUI.min.js') }}"></script>
     <script src="{{ url_for('static', filename='assets/js/app.js') }}"></script>
@@ -212,7 +249,6 @@
     <script src="{{ url_for('static', filename='plugins/sweetalerts/sweetalert2.min.js') }}"></script>
     <script src="{{ url_for('static', filename='plugins/sweetalerts/custom-sweetalert.js') }}"></script>
     <script src="{{ url_for('static', filename='assets/js/components/custom-counter.js') }}"></script>
-    <!-- <script src="{{ url_for('static', filename='plugins/file-upload/file-upload-with-preview.min.js') }}"></script> -->
     <script>
         var annio = parseInt("{{ year }}");
         var mes = parseInt("{{ month }}");
@@ -269,30 +305,19 @@
             var minutosRestantes = parseInt("{{ minutos_restantes }}");
             var segundosRestantes = parseInt("{{ segundos_restantes }}");
             console.log(diasRestantes, horasRestantes, minutosRestantes, segundosRestantes);
-    
+
             // Actualizar el contenido de los elementos HTML con los nuevos valores
             document.querySelector(".clock-val:nth-child(1)").textContent = diasRestantes;
             document.querySelector(".clock-val:nth-child(3)").textContent = horasRestantes;
             document.querySelector(".clock-val:nth-child(5)").textContent = minutosRestantes;
             document.querySelector(".clock-val:nth-child(7)").textContent = segundosRestantes;
         }
-    
+
         // Llamar a la función actualizarContador inicialmente
         actualizarContador();
-    
+
         // Actualizar el contador cada segundo
-        setInterval(actualizarContador, 1000);
-        //Button sweet alert
-        $('.widget-content .exitoso').on('click', function () {
-            swal({
-                title: 'Evento guardado!',
-                text: "Se ha registrado con exito!",
-                type: 'success',
-                padding: '2em'
-              })
-          })
-
-
+        setInterval(actualizarContador, 1000);      
     </script>
 {% endblock %}
 

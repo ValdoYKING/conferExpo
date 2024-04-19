@@ -49,7 +49,8 @@ class ModelEvento:
                     evento.get('duracion_estimada', ''),
                     evento.get('descripcion', ''),
                     evento.get('imagen', ''),
-                    evento.get('usuarios_reistrados', [])
+                    evento.get('usuarios_registrados', []),
+                    evento.get('estatus_evento', '')
                 )
             return None
         except Exception as ex:
@@ -95,7 +96,8 @@ class ModelEvento:
                     evento.get('duracion_estimada', ''),
                     evento.get('descripcion', ''),
                     evento.get('imagen', ''),
-                    evento.get('usuarios_registrados', [])
+                    evento.get('usuarios_registrados', []),
+                    evento.get('estatus_evento', '')
                 )
             return None
         except Exception as ex:
@@ -118,6 +120,15 @@ class ModelEvento:
             # Actualizar el evento en la base de datos
             db.eventos.update_one({"_id": ObjectId(id)}, {"$set": evento_existente})
             return True, "¡Evento actualizado exitosamente!"
+        except Exception as ex:
+            return False, str(ex)
+        
+    @classmethod
+    def update_cancel_event(cls, db, id):
+        try:
+            # Actualizar el evento en la base de datos
+            db.eventos.update_one({"_id": ObjectId(id)}, {"$set": {"estatus_evento": 1}})
+            return True, "¡Evento cancelado exitosamente!"
         except Exception as ex:
             return False, str(ex)
     

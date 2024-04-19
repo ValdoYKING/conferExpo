@@ -55,3 +55,7 @@ video {
       margin: 0 auto; /* Esto centrará el contenido en dispositivos móviles */
     }
   }
+
+  .blanco-y-negro {
+    filter: grayscale(100%);
+}

@@ -37,42 +37,47 @@
                 <div class="widget-content widget-content-area layout-top-spacing">
                     <div class="card-container-card"> <!-- Contenedor para las tarjetas -->
                         {% for evento in eventos %}
-                        <div class="card component-card_9">
+                        <div class="card component-card_9 {% if evento.estatus_evento == 1 %} cancelado {% endif %}">
                             {% if evento.imagen %}
-                            <img class="card-img-top" src="{{ url_for('show_image', filename=evento.imagen)}}" alt="Imagen del evento {{ evento.nombre }}">
+                            <img class="card-img-top {% if evento.estatus_evento == 1 %} blanco-y-negro {% endif %}" src="{{ url_for('show_image', filename=evento.imagen)}}" alt="Imagen del evento {{ evento.nombre }}">
                             {% else %}
-                            <img src="https://via.placeholder.com/150" class="card-img-top" alt="Imagen no disponible">
+                            <img src="{{ url_for('static',filename=img/confer_default.jpg)}}" class="card-img-top" alt="Imagen no disponible">
                             {% endif %}
                             <div class="card-body">
                                 <p class="meta-date">{{ evento.fecha }} | {{ evento.fecha_hora_inicio}} hrs</p>
                                 <h5 class="card-title">{{ evento.nombre }}</h5>
-                                <p class="card-text">{{ evento.resumen }}</p>            
+                                <p class="card-text">{{ evento.resumen }}</p>
+                                {% if evento.estatus_evento == 1 %}
+                                <div class="cancelado-overlay text-danger">Cancelado</div>
+                                {% endif %}
                                 <div class="meta-info">
                                     <div class="meta-user">
                                         <div class="user-name">
+                                            {% if evento.estatus_evento != 1 %}
                                             <a href="{{ url_for('showEvent', _id=evento._id) }}" class="btn btn-secondary btn-rounded mb-1">Ver detalles</a>
+                                            {% endif %}
                                         </div>
                                         <div class="avatar">
+                                            {% if evento.estatus_evento != 1 %}
                                             <a href="{{ url_for('editarEvento', _id=evento._id) }}"><lord-icon
                                                 src="https://cdn.lordicon.com/wuvorxbv.json"
                                                 trigger="hover"
                                                 colors="primary:#121331,secondary:#6f42c1"
                                                 style="width:30px;height:30px">
                                             </lord-icon></a>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     <div class="meta-action">
                                         <div class="meta-likes">
                                              {{ evento.aforo }}
                                         </div>
-
                                         <div class="meta-view">
                                             <lord-icon
                                                 src="https://cdn.lordicon.com/rfgxevig.json"
                                                 trigger="hover"
                                                 colors="primary:#121331,secondary:#6f42c1"
                                                 style="width:30px;height:30px"></lord-icon> 
-                                            
                                         </div>
                                     </div>
                                 </div>
@@ -83,7 +88,7 @@
                 </div>
             </div>                   
         </div>
-    </main>   
+    </main>    
     {% include '/footer.html' %}
 </body>
 {% endblock %}

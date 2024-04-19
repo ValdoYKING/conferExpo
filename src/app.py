@@ -1,6 +1,6 @@
 import io
 import cv2
-from flask import Flask, jsonify, make_response, render_template, request, redirect, url_for, flash
+from flask import Flask, jsonify, make_response, render_template, request, redirect, url_for, flash, send_file, send_from_directory
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask import send_from_directory, abort
@@ -8,6 +8,7 @@ import os
 import numpy as np
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+import requests
 from werkzeug.utils import secure_filename
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
@@ -330,6 +331,7 @@ def registerEvent():
             aforo = request.form['aforo']
             duracion_estimada = request.form['duracion_estimada']
             descripcion = request.form['descriptionEvent']
+            estatus_evento = 0
 
             # Verificar si se ha proporcionado una imagen
             if 'imagen' not in request.files:
@@ -365,6 +367,7 @@ def registerEvent():
                 aforo=aforo,
                 duracion_estimada=duracion_estimada,
                 descripcion=descripcion,
+                estatus_evento=estatus_evento,
                 imagen=filename
                 #imagen=os.path.join(app.config['UPLOAD_FOLDER'], filename)
             )
@@ -394,10 +397,29 @@ def mostrar_imagen(filename):
         # Si no se encuentra el archivo, regresa un error 404
         #abort(404)
         return render_template('error/404.html'), 404
+    
+def check_image_url(url):
+    try:
+        response = requests.get(url)
+        if response.status_code == 404:
+            return False
+        return True
+    except Exception as e:
+        print("Error:", e)
+        return False
         
 @app.route('/show_image/<filename>')
 def show_image(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    upload_folder = app.config['UPLOAD_FOLDER']
+    image_path = os.path.join(upload_folder, filename)
+    
+    # Verifica si la imagen existe en la ubicación especificada
+    if os.path.isfile(image_path):
+        return send_from_directory(upload_folder, filename)
+    else:
+        # Si la imagen no existe, devuelve la imagen por defecto
+        default_image_path = os.path.join(app.static_folder, 'img', 'confer_default.jpg')
+        return send_file(default_image_path)
 
     
 @app.route('/showEvent/<_id>', methods=['GET', 'POST'])
@@ -457,67 +479,77 @@ def editarEvento(_id):
         nombre_usuario = current_user.username
         if request.method == 'GET':
             resultData = ModelEvento.get_evento_by_id(db, _id)
-            print(resultData)
             if not resultData:
                 flash('El evento no existe', 'error')
                 return redirect(url_for('homeAdmin'))
             return render_template('adminUser/editEvent.html', eventoID=resultData, nombre_usuario=nombre_usuario)
 
         if request.method == 'POST':
-           # Obtener los datos del formulario
-           nombre = request.form['eventName']
-           resumen = request.form['resumeEvent']
-           fecha = request.form['dateEvent']
-           fecha_hora_inicio = request.form['starHour']
-           fecha_hora_fin = request.form['finishHour']
-           lugar = request.form['addressEvent']
-           referencias = request.form['referencesAddress']
-           aforo = request.form['aforo']
-           duracion_estimada = request.form['duracion_estimada']
-           descripcion = request.form['descriptionEvent']
-           # ... obtener otros datos del formulario ...
-           # Obtener el evento de la base de datos
-           evento = ModelEvento.get_evento_by_id(db, _id)
-           if not evento:
-               flash('El evento no existe', 'error')
-               return redirect(url_for('homeAdmin'))
-           # Validar datos e imagen (similar al código de 'registerEvent')
-           imagen = request.files['imagen']
-           # Verificar si se proporcionó una nueva imagen
-           if imagen and imagen.filename != '':
-               if allowed_file(imagen.filename):
-                   # Se asegura que el nombre del archivo sea seguro
-                   filename = secure_filename(imagen.filename)
-                   # Se guarda la nueva imagen en la carpeta deseada
-                   imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                   # Actualizar la imagen en el evento solo si se proporciona una nueva imagen
-                   evento.imagen = filename
-               else:
-                   flash('El formato de archivo de imagen no es válido')
-                   return redirect(request.url)
-           # Actualizar los campos del evento
-           evento.nombre = nombre
-           evento.resumen = resumen
-           evento.fecha = fecha
-           evento.fecha_hora_inicio = fecha_hora_inicio
-           evento.fecha_hora_fin = fecha_hora_fin
-           evento.lugar = lugar
-           evento.referencias = referencias
-           evento.aforo = aforo
-           evento.duracion_estimada = duracion_estimada
-           evento.descripcion = descripcion
-           # Actualizar el evento en la base de datos
-           success, message = ModelEvento.update_evento(db, _id, evento)
+            # Obtener el evento de la base de datos antes de la edición
+            evento_anterior = ModelEvento.get_evento_by_id(db, _id)
+            if not evento_anterior:
+                flash('El evento no existe', 'error')
+                return redirect(url_for('homeAdmin'))
 
-           if success:
-               flash(message)
-               return redirect(url_for('homeAdmin'))
-           else:
-               flash(message, 'error')
-               return redirect(url_for('editarEvento', _id=_id))
+            # Guardar la información de usuarios registrados antes de la edición
+            usuarios_registrados_anteriores = evento_anterior.usuarios_registrados
+
+            # Obtener los datos del formulario
+            nombre = request.form['eventName']
+            resumen = request.form['resumeEvent']
+            fecha = request.form['dateEvent']
+            fecha_hora_inicio = request.form['starHour']
+            fecha_hora_fin = request.form['finishHour']
+            lugar = request.form['addressEvent']
+            referencias = request.form['referencesAddress']
+            aforo = request.form['aforo']
+            duracion_estimada = request.form['duracion_estimada']
+            descripcion = request.form['descriptionEvent']
+            estatus_evento = evento_anterior.estatus_evento
+
+            # Validar datos e imagen (similar al código de 'registerEvent')
+            imagen = request.files['imagen']
+            # Verificar si se proporcionó una nueva imagen
+            if imagen and imagen.filename != '':
+                if allowed_file(imagen.filename):
+                    # Se asegura que el nombre del archivo sea seguro
+                    filename = secure_filename(imagen.filename)
+                    # Se guarda la nueva imagen en la carpeta deseada
+                    imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                    # Actualizar la imagen en el evento solo si se proporciona una nueva imagen
+                    evento_anterior.imagen = filename
+                else:
+                    flash('El formato de archivo de imagen no es válido')
+                    return redirect(request.url)
+
+            # Actualizar los campos del evento
+            evento_anterior.nombre = nombre
+            evento_anterior.resumen = resumen
+            evento_anterior.fecha = fecha
+            evento_anterior.fecha_hora_inicio = fecha_hora_inicio
+            evento_anterior.fecha_hora_fin = fecha_hora_fin
+            evento_anterior.lugar = lugar
+            evento_anterior.referencias = referencias
+            evento_anterior.aforo = aforo
+            evento_anterior.duracion_estimada = duracion_estimada
+            evento_anterior.descripcion = descripcion
+            evento_anterior.estatus_evento = estatus_evento
+
+            # Restaurar la información de usuarios registrados
+            evento_anterior.usuarios_registrados = usuarios_registrados_anteriores
+
+            # Actualizar el evento en la base de datos
+            success, message = ModelEvento.update_evento(db, _id, evento_anterior)
+
+            if success:
+                flash(message)
+                return redirect(url_for('homeAdmin'))
+            else:
+                flash(message, 'error')
+                return redirect(url_for('editarEvento', _id=_id))
     else:
-        #abort(404)
         return render_template('error/404.html'), 404
+
 
 @app.route("/scan_qr_event")
 @login_required
@@ -606,6 +638,26 @@ def usersList():
         # Si el usuario no es un administrador, redirigir a una página de error 404
         #abort(404)
         return render_template('error/404.html'), 404      
+    
+@app.route('/cancelEvent/<evento_id>', methods=['POST'])
+@login_required
+def cancelEvent(evento_id):
+    # Obtener el ID del usuario loggeado
+    user_id = current_user.id
+    
+    # Verificar si se recibió una solicitud POST
+    if request.method == 'POST':
+        # Intentar cancelar el evento
+        success, message = ModelEvento.update_cancel_event(db, evento_id)
+
+        if success:
+            flash('El evento ha sido cancelado correctamente.', 'success')
+        else:
+            flash(f'Error al cancelar el evento: {message}', 'error')
+
+    # Redirigir de vuelta a la página de inicio o a donde desees
+    return redirect(url_for('homeAdmin'))
+
 
 
 @app.route('/protected')

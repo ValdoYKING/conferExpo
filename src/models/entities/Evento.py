@@ -2,7 +2,7 @@ from bson.objectid import ObjectId
 from datetime import datetime
 
 class Evento:
-    def __init__(self,id=None, nombre=None, resumen=None, fecha=None, fecha_hora_inicio=None, fecha_hora_fin=None, lugar=None, referencias=None, aforo=None, duracion_estimada=None, descripcion=None, imagen=None, usuarios_registrados=None):
+    def __init__(self,id=None, nombre=None, resumen=None, fecha=None, fecha_hora_inicio=None, fecha_hora_fin=None, lugar=None, referencias=None, aforo=None, duracion_estimada=None, descripcion=None, imagen=None, usuarios_registrados=None,estatus_evento=None):
         self.id = id
         self.nombre = nombre
         self.resumen = resumen
@@ -16,6 +16,7 @@ class Evento:
         self.descripcion = descripcion
         self.imagen = imagen
         self.usuarios_registrados = usuarios_registrados or []  # Inicializa usuarios_registrados como una lista vacía
+        self.estatus_evento = estatus_evento
 
     def registrar_usuario(self, user_id):
         self.usuarios_registrados.append(user_id)
