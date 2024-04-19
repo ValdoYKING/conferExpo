@@ -41,7 +41,7 @@ login_manager.login_view = 'login'  # Vista a la que se redirigirá si el usuari
 login_manager.session_protection = "strong"  # Usar protección de sesión "strong" para detectar cambios de IP
 
 # Duración de la sesión
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=15)  # Sesión expira después de 30 minutos de inactividad
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=20)  # Sesión expira después de 30 minutos de inactividad
 
 # Configuración de MongoDB
 client = MongoClient('mongodb+srv://valdo_asistencia:asistencia2024@valdodev.iaxsmpm.mongodb.net/asistenciaWeb_2024')
