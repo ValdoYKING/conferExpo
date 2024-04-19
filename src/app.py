@@ -8,7 +8,6 @@ import os
 import numpy as np
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-import requests
 from werkzeug.utils import secure_filename
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
@@ -398,15 +397,6 @@ def mostrar_imagen(filename):
         #abort(404)
         return render_template('error/404.html'), 404
     
-def check_image_url(url):
-    try:
-        response = requests.get(url)
-        if response.status_code == 404:
-            return False
-        return True
-    except Exception as e:
-        print("Error:", e)
-        return False
         
 @app.route('/show_image/<filename>')
 def show_image(filename):
