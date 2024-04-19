@@ -117,11 +117,13 @@
                                         <div class="tab-content" id="v-pills-tabContent">
                                           <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
                                             <blockquote class="blockquote">
-                                                <h4 class="mb-4"><lord-icon src="https://cdn.lordicon.com/abfverha.json" trigger="hover" style="width:24px;height:24px"></lord-icon>Lugar y fecha</h4>
-                                                <p class="mb-4"><h5>Lugar</h5></p>
-                                                <p class="mb-4"><h6> Direccion: {{ eventoID.lugar }}</h6></p>
-                                                <p class="mb-4"><h6> Referencias de la ubicación: {{ eventoID.referencias }}</h6></p>
-                                                <p class="mb-4"><h5>Fecha</h5></p>
+                                                <h2 class="mb-4"><lord-icon src="https://cdn.lordicon.com/abfverha.json" trigger="hover" style="width:28px;height:28px"></lord-icon> Lugar y fecha</h2>
+                                                <p class="mb-4"><h5> • Lugar</h5></p>
+                                                <p class="mb-4"><h6>- Direccion:</h6></p>
+                                                <p class="mb-4"><h6> {{ eventoID.lugar }}</h6></p>
+                                                <p class="mb-4"><h6>- Referencias de la ubicación: </h6></p>
+                                                <p class="mb-4"><h6> {{ eventoID.referencias }}</h6></p>
+                                                <p class="mb-4"><h5> • Fecha</h5></p>
                                                 <p class="mb-4"><h6> {{fecha_formateada }}</h6></p>
                                                 <p class="mb-4"><h6> Hora de inicio: {{ eventoID.fecha_hora_inicio }} hrs</h6></p>
                                                 <p class="mb-4"><h6> Hora de fin: {{ eventoID.fecha_hora_fin }} hrs</h6></p>
@@ -129,7 +131,7 @@
                                           </div>
                                           <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
                                             <blockquote class="blockquote">
-                                                <h4><lord-icon src="https://cdn.lordicon.com/yxczfiyc.json" trigger="hover" style="width:24px;height:24px"></lord-icon>Sobre el evento</h4>
+                                                <h2><lord-icon src="https://cdn.lordicon.com/yxczfiyc.json" trigger="hover" style="width:24px;height:24px"></lord-icon> Sobre el evento</h2>
                                                 <pre>{{ eventoID.descripcion }}</pre>
                                             </blockquote>
                                             
