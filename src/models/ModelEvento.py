@@ -1,7 +1,11 @@
 from .entities.Evento import Evento
 from bson.objectid import ObjectId
+from datetime import datetime
+import pytz
 
 class ModelEvento:
+
+    
     @classmethod
     def crear_evento(cls, db, evento):
         try:
@@ -131,4 +135,34 @@ class ModelEvento:
             return True, "¡Evento cancelado exitosamente!"
         except Exception as ex:
             return False, str(ex)
+        
+    @classmethod
+    def get_all_eventos_activos(cls, db):
+        try:
+            # Obtener todos los eventos activos (estatus_evento = 0) de la base de datos
+            eventos_activos = list(db.eventos.find({"estatus_evento": 0}))
+            return eventos_activos, "¡Eventos activos encontrados exitosamente!"
+        except Exception as ex:
+            return None, str(ex)
+        
+    @classmethod
+    def get_all_eventos_cancelados(cls, db):
+        try:
+            # Obtener todos los eventos activos (estatus_evento = 0) de la base de datos
+            eventos_activos = list(db.eventos.find({"estatus_evento": 1}))
+            return eventos_activos, "¡Eventos activos encontrados exitosamente!"
+        except Exception as ex:
+            return None, str(ex)
+        
+    @classmethod
+    def get_all_eventos_proximos(cls, db):
+        try:
+            zona_horaria_mexico = pytz.timezone('America/Mexico_City')
+            fecha_actual_mexico = datetime.now(zona_horaria_mexico)
+            fecha_formateada = fecha_actual_mexico.strftime("%Y-%m-%d")
+            
+            eventos_proximos = list(db.eventos.find({"fecha": {"$gte": fecha_formateada}}))
+            return eventos_proximos, "¡Eventos próximos encontrados exitosamente!"
+        except Exception as ex:
+            return None, str(ex)
     

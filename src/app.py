@@ -648,6 +648,60 @@ def cancelEvent(evento_id):
     # Redirigir de vuelta a la página de inicio o a donde desees
     return redirect(url_for('homeAdmin'))
 
+@app.route("/homeActivos")
+@login_required
+def homeActivos():
+    # Verificar el rol del usuario
+    if current_user.rol == "administrador":
+        nombre_usuario = current_user.username
+        # Obtener todos los eventos
+        eventos, mensaje = ModelEvento.get_all_eventos_activos(db)
+
+        if eventos is None:
+            return render_template("adminUser/homeActivos.html", error=mensaje)
+
+        return render_template("adminUser/homeActivos.html", eventos=eventos, nombre_usuario=nombre_usuario)
+    else:
+        # Si el usuario no es un administrador, redirigir a una página de error 404
+        #abort(404)
+        return render_template('error/404.html'), 404
+    
+@app.route("/homeCancelados")
+@login_required
+def homeCancelados():
+    # Verificar el rol del usuario
+    if current_user.rol == "administrador":
+        nombre_usuario = current_user.username
+        # Obtener todos los eventos
+        eventos, mensaje = ModelEvento.get_all_eventos_cancelados(db)
+
+        if eventos is None:
+            return render_template("adminUser/homeCancelados.html", error=mensaje)
+
+        return render_template("adminUser/homeCancelados.html", eventos=eventos, nombre_usuario=nombre_usuario)
+    else:
+        # Si el usuario no es un administrador, redirigir a una página de error 404
+        #abort(404)
+        return render_template('error/404.html'), 404
+
+@app.route("/homeProximos")
+@login_required
+def homeProximos():
+    # Verificar el rol del usuario
+    if current_user.rol == "administrador":
+        nombre_usuario = current_user.username
+        # Obtener todos los eventos
+        eventos, mensaje = ModelEvento.get_all_eventos_proximos(db)
+
+        if eventos is None:
+            return render_template("adminUser/homeProximos.html", error=mensaje)
+
+        return render_template("adminUser/homeProximos.html", eventos=eventos, nombre_usuario=nombre_usuario)
+    else:
+        # Si el usuario no es un administrador, redirigir a una página de error 404
+        #abort(404)
+        return render_template('error/404.html'), 404
+
 
 
 @app.route('/protected')
