@@ -61,7 +61,11 @@ class ModelUser():
     def get_by_username(cls, db, username):
         # Buscar usuario por nombre de usuario en MongoDB
         return db.usuarios.find_one({"username": username})
-    
+
+    @classmethod
+    def get_by_email(cls, db, correo_electronico):
+        # Buscar usuario por correo electrónico en MongoDB
+        return db.usuarios.find_one({"correo_electronico": correo_electronico})    
         
     @classmethod
     def register(cls, db, user):

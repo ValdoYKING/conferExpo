@@ -101,3 +101,12 @@ video {
     padding: 7px 16px;
     font-size: 13px;
 }
+
+.info-icon {
+    position: absolute;
+    right: 0; /* Posicionamiento en el lado derecho */
+    top: 30%; /* Ajusta esta propiedad para subir o bajar el icono */
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+

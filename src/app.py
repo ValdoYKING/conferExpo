@@ -73,6 +73,11 @@ def register():
             flash('El nombre de usuario ya está en uso. Por favor, elige otro.')
             return redirect(url_for('register'))
 
+        # Verificar si el correo electrónico ya está en uso
+        if ModelUser.get_by_email(db, correo_electronico):
+            flash('El correo electrónico ya está en uso. Por favor, utiliza otro.')
+            return redirect(url_for('register'))
+
         # Crear un nuevo usuario
         new_user = User(username=username, password=password, nombre=nombre, matricula=matricula, telefono=telefono, correo_electronico=correo_electronico, motivo_prof=motivo_prof, rol='usuario')
         # Otros campos...
