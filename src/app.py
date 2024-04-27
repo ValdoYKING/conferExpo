@@ -5,6 +5,7 @@ from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask import send_from_directory, abort
 import os
+from dotenv import load_dotenv
 import numpy as np
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -25,10 +26,12 @@ from models.ModelEvento import ModelEvento
 # Entities:
 from models.entities.User import User
 from models.entities.Evento import Evento
+load_dotenv()
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = 'B!1w8NAt1T^%kvhUI*S^'
+#app.config['SECRET_KEY'] = 'B!1w8NAt1T^%kvhUI*S^'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
 IMG_FOLDER = os.path.join("public", "imgEvent")
 
@@ -43,7 +46,10 @@ login_manager.session_protection = "strong"  # Usar protección de sesión "stro
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=20)  # Sesión expira después de 30 minutos de inactividad
 
 # Configuración de MongoDB
-client = MongoClient('mongodb+srv://valdo_asistencia:asistencia2024@valdodev.iaxsmpm.mongodb.net/asistenciaWeb_2024')
+#client = MongoClient('mongodb+srv://valdo_asistencia:asistencia2024@valdodev.iaxsmpm.mongodb.net/asistenciaWeb_2024')
+mongo_uri = os.environ.get('MONGO_URI')
+#client = MongoClient('mongodb+srv://conferexpo:mA8TBvLF3OTAoirY@cluster0.4itbr13.mongodb.net/')
+client = MongoClient(mongo_uri)
 db = client.asistenciaWeb_2024
 
 
